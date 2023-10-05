@@ -1,7 +1,7 @@
 import datetime
 import enum
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.forms import DateTimeField 
 from model_utils.managers import InheritanceManager
 #from enumfields import EnumField
@@ -9,16 +9,16 @@ from enum import Enum
 
 # Create your models here.
 
-# class User(models.Model):
-#     userName= models.CharField(max_length=255,default="",unique=True)
-#     phoneNumber=models.CharField( max_length=10,default="")
-#     password=models.CharField(max_length=10,default="")
-#     nationalNumber=models.CharField(max_length=15,default="",unique=True)
-#     birthDate=models.DateField()
-#     isOwner=models.BooleanField()
+class User(models.Model):
+    userName= models.CharField(max_length=255,default="",unique=True)
+    phoneNumber=models.CharField( max_length=10,default="")
+    password=models.CharField(max_length=10,default="")
+    nationalNumber=models.CharField(max_length=15,default="",unique=True)
+    birthDate=models.DateField()
+    isOwner=models.BooleanField()
     
-#     def __str__(self):
-#         return f'{ self.pk} {self.userName} '
+    def __str__(self):
+        return f'{ self.pk} {self.userName} '
 
 
 
@@ -72,10 +72,9 @@ class Hotel(PublicPlace):
 
 
 class Restaurant(PublicPlace):
-    #restaurant_specific_attribute = models.CharField(max_length=255)
     openTime=models.TimeField()
     menuType=models.CharField(max_length=500,default="")
-    
+
 
     class Meta:
         verbose_name_plural = 'restaurants'
@@ -83,7 +82,7 @@ class Restaurant(PublicPlace):
 
 class Table(models.Model):
     tableNumber=models.IntegerField(default=1)
-    
+
 class TableBooking(models.Model):
     price=models.FloatField(max_length=20,default="")
     checkInTime=models.DateTimeField(null=True,blank=True)
@@ -111,7 +110,7 @@ class Farm(PublicPlace):
 
     class Meta:
         verbose_name_plural = 'farms'
-        
+
 class Room(models.Model):
     hotelId=models.ForeignKey(Hotel, on_delete=models.CASCADE,default=None)
     roomTypes=(('single' , 'single'),
@@ -145,7 +144,6 @@ class FarmBooking(models.Model):
     # date=models.TimeField(null=True)
     checkoutDate=models.DateField(default=datetime.date.today)
 
-    
 
 
 class Amenities(models.Model):
@@ -155,26 +153,28 @@ class Amenities(models.Model):
         ('farm', 'Farm')
     )
     type = models.CharField(max_length=20, choices=placeType)
-    freeParking =models.BooleanField(default=False)
-    bar=models.BooleanField(default=False)
-    currencyExchange=models.BooleanField(default=False)
-    twintyFourHoursFrontDesk=models.BooleanField(default=False)
-    carRental=models.BooleanField(default=False)
-    airportDropOff=models.BooleanField(default=False)
-    cleaningServices=models.BooleanField(default=False)
-    laundryServices=models.BooleanField(default=False)
-    dryCleaning=models.BooleanField(default=False)
-    ATM=models.BooleanField(default=False)
-    faxCopyingServices=models.BooleanField(default=False)
-    firstAidServices=models.BooleanField(default=False)
-    wifi=models.BooleanField(default=False)
-    bbq=models.BooleanField(default=False)
-    multiBathrooms=models.BooleanField(default=False)
-    solarHeater=models.BooleanField(default=False)
-    towels=models.BooleanField(default=False)
-    multiRooms=models.BooleanField(default=False)
-    filteredPool=models.BooleanField(default=False)
-    toy=models.BooleanField(default=False)
+    name = models.CharField(max_length=50, choices=placeType,default="")
+    
+    # freeParking =models.BooleanField(default=False)
+    # bar=models.BooleanField(default=False)
+    # currencyExchange=models.BooleanField(default=False)
+    # twintyFourHoursFrontDesk=models.BooleanField(default=False)
+    # carRental=models.BooleanField(default=False)
+    # airportDropOff=models.BooleanField(default=False)
+    # cleaningServices=models.BooleanField(default=False)
+    # laundryServices=models.BooleanField(default=False)
+    # dryCleaning=models.BooleanField(default=False)
+    # ATM=models.BooleanField(default=False)
+    # faxCopyingServices=models.BooleanField(default=False)
+    # firstAidServices=models.BooleanField(default=False)
+    # wifi=models.BooleanField(default=False)
+    # bbq=models.BooleanField(default=False)
+    # multiBathrooms=models.BooleanField(default=False)
+    # solarHeater=models.BooleanField(default=False)
+    # towels=models.BooleanField(default=False)
+    # multiRooms=models.BooleanField(default=False)
+    # filteredPool=models.BooleanField(default=False)
+    # toy=models.BooleanField(default=False)
     
     
 class Service(models.Model):
