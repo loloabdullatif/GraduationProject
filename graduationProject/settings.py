@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!qh^k7tq!#y%(+(d4)_@8e-j5z%#*(j=wc^vzt730e&aa+sr3i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graduationapp',
     'model_utils',
+    'rest_framework',
     
 ]
 

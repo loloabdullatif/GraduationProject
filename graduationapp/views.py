@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse , HttpResponseRedirect
 from django.template import loader
-from graduationapp.models import Farm,PublicPlace,FarmBooking,User
+from graduationapp.models import Farm,PublicPlace,FarmBooking,TouristaUser
 from django.db.models import Subquery
 # from django.contrib.auth.models import User
 
@@ -41,4 +41,10 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 def logout(request):
+    return redirect('login')
+
+
+def getPendingPublicPlaces(request):
+    publicPlaces = PublicPlace.objects.get(isApproved=False)
+    # TODO: return a proper web page
     return redirect('login')

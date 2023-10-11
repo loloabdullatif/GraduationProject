@@ -1,8 +1,8 @@
 from django.contrib import admin
-from graduationapp.models import Governate,City,Street,PublicPlace,Hotel,Restaurant,Table,TableBooking,Farm,Room,RoomBooking,FarmBooking,Amenities,Service,Images
+from graduationapp.models import TouristaUser,Governate,City,Street,PublicPlace,Hotel,Restaurant,Table,TableBooking,Farm,Room,RoomBooking,FarmBooking,Amenities,Service,Images
 
 
-#admin.site.register(User)
+admin.site.register(TouristaUser)
 admin.site.register(Governate)
 admin.site.register(City)
 admin.site.register(Street)

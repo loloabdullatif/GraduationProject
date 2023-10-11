@@ -9,9 +9,11 @@ from enum import Enum
 
 # Create your models here.
 
-class User(models.Model):
+class TouristaUser(models.Model):
     userName= models.CharField(max_length=255,default="",unique=True)
     phoneNumber=models.CharField( max_length=10,default="")
+    firstName=models.CharField( max_length=10,default="")
+    lastName=models.CharField( max_length=10,default="")
     password=models.CharField(max_length=10,default="")
     nationalNumber=models.CharField(max_length=15,default="",unique=True)
     birthDate=models.DateField()
@@ -36,8 +38,9 @@ class Street(models.Model):
     
 
 class PublicPlace(models.Model):
-    userId = models.ForeignKey(User, on_delete=models.CASCADE,default=None)
+    userId = models.ForeignKey(TouristaUser, on_delete=models.CASCADE,default=None)
     streetId = models.ForeignKey(Street, on_delete=models.CASCADE,default=None)
+    isApproved= models.BooleanField(default=False)
     placeType = (
         ('hotel', 'Hotel'),
         ('restaurant', 'Restaurant'),
@@ -64,7 +67,6 @@ class Hotel(PublicPlace):
     # hotel_specific_attribute = models.CharField(max_length=255)
     numberOfRooms=models.IntegerField(default=1)
     numberOfStars=models.IntegerField(default=1)
-
 
 
     class Meta:
@@ -128,7 +130,7 @@ class Room(models.Model):
 
 
 class RoomBooking(models.Model):
-    userId = models.ForeignKey(User, on_delete=models.CASCADE,default=None)
+    userId = models.ForeignKey(TouristaUser, on_delete=models.CASCADE,default=None)
     roomId = models.OneToOneField(Room, on_delete=models.CASCADE,related_name="roomId",default=None)
 
     price=models.FloatField(max_length=20,default="")
@@ -136,7 +138,7 @@ class RoomBooking(models.Model):
     checkoutDate=models.DateField(default=datetime.date.today)
 
 class FarmBooking(models.Model):
-    userId = models.ForeignKey(User, on_delete=models.CASCADE,default=None)
+    userId = models.ForeignKey(TouristaUser, on_delete=models.CASCADE,default=None)
     farmId = models.OneToOneField(Farm, on_delete=models.CASCADE,default=None)
 
     price=models.FloatField(max_length=20,default="")
