@@ -10,14 +10,14 @@ from enum import Enum
 # Create your models here.
 
 class TouristaUser(models.Model):
-    userName= models.CharField(max_length=255,default="",unique=True)
-    phoneNumber=models.CharField( max_length=10,default="")
-    firstName=models.CharField( max_length=10,default="")
-    lastName=models.CharField( max_length=10,default="")
-    password=models.CharField(max_length=10,default="")
-    nationalNumber=models.CharField(max_length=15,default="",unique=True)
-    birthDate=models.DateField()
-    isOwner=models.BooleanField()
+    userName= models.CharField(max_length=255,default="",unique=True,blank=False)
+    phoneNumber=models.CharField( max_length=10,default="",blank=False)
+    firstName=models.CharField( max_length=10,default="",blank=False)
+    lastName=models.CharField( max_length=10,default="",blank=False)
+    password=models.CharField(max_length=10,default="",blank=False)
+    nationalNumber=models.CharField(max_length=15,default="",unique=True,blank=False)
+    birthDate=models.DateField(blank=False)
+    isOwner=models.BooleanField(default=False)
     
     def __str__(self):
         return f'{ self.pk} {self.userName} '
@@ -25,16 +25,25 @@ class TouristaUser(models.Model):
 
 
 class Governate(models.Model):
-    name=models.CharField(default='',max_length=10)
+    name=models.CharField(default='',max_length=30)
+    
+    def __str__(self):
+        return self.name
     
 
 class City(models.Model):
     governateId = models.ForeignKey(Governate, on_delete=models.CASCADE,default=None)
-    name=models.CharField(default='',max_length=10)
+    name=models.CharField(default='',max_length=30)
+    
+    def __str__(self):
+        return self.name
 
 class Street(models.Model):
     cityId = models.ForeignKey(City, on_delete=models.CASCADE,default=None)
-    name=models.CharField(default='',max_length=10)
+    name=models.CharField(default='',max_length=30)
+    
+    def __str__(self):
+        return self.name
     
 
 class PublicPlace(models.Model):
@@ -52,6 +61,7 @@ class PublicPlace(models.Model):
     phoneNumber=models.CharField( max_length=10,default="")
     rating=models.IntegerField(default=1)
     area=models.FloatField(max_length=20,default="")
+    #publicPlaceImage= models.ImageField(null=True,blank=True,upload_to='images/')
 
     class Meta:
         verbose_name_plural = 'public places'
@@ -155,8 +165,10 @@ class Amenities(models.Model):
         ('farm', 'Farm')
     )
     type = models.CharField(max_length=20, choices=placeType)
-    name = models.CharField(max_length=50, choices=placeType,default="")
+    name = models.CharField(max_length=50,default="")
     
+    def __str__(self):
+        return self.name
     # freeParking =models.BooleanField(default=False)
     # bar=models.BooleanField(default=False)
     # currencyExchange=models.BooleanField(default=False)
@@ -186,7 +198,7 @@ class Service(models.Model):
 
 class Images(models.Model):
     PublicPlaceId = models.ForeignKey(PublicPlace, on_delete=models.CASCADE,default=None)
-    path=models.ImageField(upload_to=None,max_length=None)
+    path=models.ImageField(blank=True,upload_to='images/')
 
 
 
