@@ -27,6 +27,12 @@ class UpdateDataSerializer(serializers.ModelSerializer):
         fields=['firstName','lastName','password','nationalNumber','birthDate','phoneNumber']
 
         
+    
+class HotelResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Hotel
+        fields='__all__'
+
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model=Service

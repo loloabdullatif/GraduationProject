@@ -5,8 +5,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from graduationapp.models import Amenities, Governate, TouristaUser,Hotel
-from api.serializer import AddFarmSerializer, AddRestaurantSerializer, GovernorateSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
+from graduationapp.models import Amenities, Governate, Images, Service, TouristaUser,Hotel
+from api.serializer import AddFarmSerializer, AddRestaurantSerializer, GovernorateSerializer, HotelResponseSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
 # Create your views here.
 
 
@@ -83,12 +83,42 @@ def updateData(request, id):
 # 1. The public place object
 # 2. The related amenities
 # 3. The images
-@api_view(['POST'])
+
+
+@api_view(['GET','POST'])
+def hotels(request):
+    if request.method == 'GET':
+        return getHotels(request)
+    return addHotel(request)
+
+
+def getHotels(request):
+    hotels= Hotel.objects.all()
+    hotelsWithDetails = []
+    for hotel in hotels:
+        hotelsWithDetails.append(getHotelDetails(hotel))
+    return Response(hotelsWithDetails,status=status.HTTP_200_OK)
+
+def getHotelDetails(hotel):
+    services = Service.objects.filter(publicPlaceId= hotel.id)
+    servicesIds= []
+    for service in services:
+        servicesIds.append(service.id)
+    print(servicesIds)
+    hotelAmenities= Amenities.objects.filter(id__in=servicesIds)
+    print(hotelAmenities)
+    hotelImages = Images.objects.filter(publicPlaceId= hotel.id)
+    return {
+        'hotel': HotelResponseSerializer(hotel).data,
+        'amenities': AmenitySerializer(hotelAmenities, many=True).data,
+        'images' : ImageSerializer(hotelImages, many=True).data
+    }   
 def addHotel(request):
     data= request.data
     hotelDict = data.get('hotel')
     if isinstance(hotelDict, str):
         hotelDict = json.loads(hotelDict)
+    hotelDict['type']='hotel'
     amenities = data.get('amenities')
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
@@ -153,6 +183,7 @@ def addRestaurant(request):
     restaurantDict = data.get('restaurant')
     if isinstance(restaurantDict, str):
         restaurantDict = json.loads(restaurantDict)
+    restaurantDict['type']='restaurant'
     amenities = data.get('amenities')
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
@@ -194,6 +225,7 @@ def addFarm(request):
     farmDict = data.get('farm')
     if isinstance(farmDict, str):
         farmDict = json.loads(farmDict)
+    farmDict['type']='farm'
     amenities = data.get('amenities')
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
