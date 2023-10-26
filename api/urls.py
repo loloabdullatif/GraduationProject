@@ -13,4 +13,6 @@ urlpatterns = [
     path('restaurants/', views.addRestaurant),
     path('amenities/', views.getAmenities),
     path('governorates/', views.getGovernorates),
+    path('cities/', views.getCities),
+    path('streets/', views.getStreets),
 ]

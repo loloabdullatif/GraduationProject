@@ -5,8 +5,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from graduationapp.models import Amenities, Governate, Images, Service, TouristaUser,Hotel
-from api.serializer import AddFarmSerializer, AddRestaurantSerializer, GovernorateSerializer, HotelResponseSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
+from graduationapp.models import Amenities, City, Governate, Images, Service, Street, TouristaUser,Hotel
+from api.serializer import AddFarmSerializer, AddRestaurantSerializer, CitySerializer, GovernorateSerializer, HotelResponseSerializer, StreetSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
 # Create your views here.
 
 
@@ -260,3 +260,58 @@ def addFarm(request):
             
         return Response(True,status=status.HTTP_201_CREATED)
     return Response(farmSerializer.errors,status=status.HTTP_400_BAD_REQUEST)  
+
+
+def getGovernorateById(id):
+    try:
+        governorate=Governate.objects.get(id=id)
+    except Governate.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(GovernorateSerializer(governorate,many =False).data)
+
+
+@api_view(['GET'])
+def getCities(request):
+    id = request.GET.get('id')
+    if id != None:
+        return getCityById(id)
+    governorateId = request.GET.get('governorateId')
+    if governorateId != None:
+        return getCitiesInGovernorate(governorateId)
+    cities=City.objects.all()
+    return Response(CitySerializer(cities,many =True).data)
+
+def getCityById(id):
+    try:
+        city=City.objects.get(id=id)
+    except City.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(CitySerializer(city,many =False).data)
+
+def getCitiesInGovernorate(governorateId):
+    cities=City.objects.filter(governateId=governorateId)
+    return Response(CitySerializer(cities,many =True).data)
+
+
+
+@api_view(['GET'])
+def getStreets(request):
+    id = request.GET.get('id')
+    if id != None:
+        return getStreetById(id)
+    cityId = request.GET.get('cityId')
+    if cityId != None:
+        return getStreetsInCity(cityId)
+    streets=Street.objects.all()
+    return Response(StreetSerializer(streets,many =True).data)
+
+def getStreetById(id):
+    try:
+        street=Street.objects.get(id=id)
+    except Street.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(StreetSerializer(street,many =False).data)
+
+def getStreetsInCity(cityId):
+    streets=Street.objects.filter(cityId=cityId)
+    return Response(StreetSerializer(streets,many =True).data)
