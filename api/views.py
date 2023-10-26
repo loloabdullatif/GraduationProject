@@ -1,10 +1,12 @@
 import genericpath
+import json
+from typing import Iterable
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from graduationapp.models import TouristaUser,Hotel
-from api.serializer import UpdateDataSerializer, UserSerializer,UserReturnSerializer,AddHotelSerializer
+from graduationapp.models import Amenities, Governate, TouristaUser,Hotel
+from api.serializer import GovernorateSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
 # Create your views here.
 
 
@@ -31,17 +33,7 @@ def getById(request):
 
 @api_view(['POST'])
 def createAccount(request):
-    data={
-    'userName':request.data.get('userName'),
-    'phoneNumber':request.data.get('phoneNumber'),
-    'firstName':request.data.get('firstName'),
-    'lastName':request.data.get('lastName'),
-    'password':request.data.get('password'),
-    'nationalNumber':request.data.get('nationalNumber'),
-    'birthDate':request.data.get('birthDate'),
-    }
-    serializer= UserSerializer(data=data)
-
+    serializer= AddUserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
@@ -87,15 +79,69 @@ def updateData(request, id):
 
 
 
-
-# @api_view(['POST'])
-# def addHotel(request):
-#     data= request.data.get()
-#     serializer= AddHotelSerializer(data=data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         amenities= request.data.get('amenities')
-#         for (x in amenities):
+# Things we need from the front-end:
+# 1. The public place object
+# 2. The related amenities
+# 3. The images
+@api_view(['POST'])
+def addHotel(request):
+    data= request.data
+    hotelDict = data.get('hotel')
+    if isinstance(hotelDict, str):
+        hotelDict = json.loads(hotelDict)
+    amenities = data.get('amenities')
+    if isinstance(amenities, str):
+        amenities = json.loads(amenities)
+        amenities = [int(i) for i in amenities]
+    images=request.FILES
+    hotelSerializer= AddHotelSerializer(data=hotelDict)
+    if hotelSerializer.is_valid():
+        hotel= hotelSerializer.save()
+        publicPlaceId= hotel.id
+        
+        if isinstance(amenities, Iterable):
+            for amenityId in amenities:
+                serviceSerializer = ServiceSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'amenityId': amenityId,
+                })
+                if serviceSerializer.is_valid():
+                    serviceSerializer.save()
+                else:
+                    return Response(serviceSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
             
-#         return Response(serializer.data,status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)  
+        if isinstance(images, Iterable):    
+            for imageKey in images.keys():
+                imageSerializer = ImageSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'path': images[imageKey],
+                })
+                if imageSerializer.is_valid():
+                    imageSerializer.save()
+                else:
+                    return Response(imageSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response(True,status=status.HTTP_201_CREATED)
+    return Response(hotelSerializer.errors,status=status.HTTP_400_BAD_REQUEST)  
+
+@api_view(['GET'])
+def getAmenities(request):
+    amenityType=request.GET.get('type')
+    amenities=Amenities.objects.filter(type=amenityType)
+    return Response(AmenitySerializer(amenities,many =True).data)
+
+@api_view(['GET'])
+def getGovernorates(request):
+    id = request.GET.get('id')
+    if id != None:
+        return getGovernorateById(id)
+    governorates=Governate.objects.all()
+    return Response(GovernorateSerializer(governorates,many =True).data)
+
+
+def getGovernorateById(id):
+    try:
+        amenities=Governate.objects.get(id=id)
+    except Governate.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(GovernorateSerializer(amenities,many =False).data)

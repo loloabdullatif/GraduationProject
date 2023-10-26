@@ -192,12 +192,12 @@ class Amenities(models.Model):
     
     
 class Service(models.Model):
-    PublicPlaceId = models.ForeignKey(PublicPlace, on_delete=models.CASCADE,default=None)
+    publicPlaceId = models.ForeignKey(PublicPlace, on_delete=models.CASCADE,default=None)
     amenityId = models.ForeignKey(Amenities, on_delete=models.CASCADE,default=None)
 
 
 class Images(models.Model):
-    PublicPlaceId = models.ForeignKey(PublicPlace, on_delete=models.CASCADE,default=None)
+    publicPlaceId = models.ForeignKey(PublicPlace, on_delete=models.CASCADE,default=None)
     path=models.ImageField(blank=True,upload_to='images/')
 
 

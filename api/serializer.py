@@ -1,10 +1,10 @@
-from graduationapp.models import TouristaUser, Hotel #we need the model we want to serialize
+from graduationapp.models import Governate, TouristaUser, Hotel,Amenities,Service,Images #we need the model we want to serialize
 from rest_framework import serializers 
 
-class UserSerializer(serializers.ModelSerializer):
+class AddUserSerializer(serializers.ModelSerializer):
     class Meta:#always its name is meta
         model=TouristaUser
-        fields=['id','userName','firstName','lastName','password','isOwner','nationalNumber','birthDate','phoneNumber']
+        fields=['userName','firstName','lastName','password','nationalNumber','birthDate','phoneNumber']
         
 class UserReturnSerializer(serializers.ModelSerializer):
     class Meta:#always its name is meta
@@ -12,11 +12,9 @@ class UserReturnSerializer(serializers.ModelSerializer):
         fields=['id','userName','firstName','lastName','isOwner','nationalNumber','birthDate','phoneNumber']    
         
 class AddHotelSerializer(serializers.ModelSerializer):
-    class Meta:#always its name is meta
+    class Meta:
         model=Hotel
-        fields=['numberOfRooms','area','numberOfStars','phoneNumber','type','name','streetId','userId']
-        
-        
+        fields=['numberOfRooms','area','numberOfStars','phoneNumber','type','name','streetId','userId']  
 class UpdateDataSerializer(serializers.ModelSerializer):
     phoneNumber=serializers.CharField( max_length=10)
     firstName=serializers.CharField( max_length=10)
@@ -29,3 +27,23 @@ class UpdateDataSerializer(serializers.ModelSerializer):
         fields=['firstName','lastName','password','nationalNumber','birthDate','phoneNumber']
 
         
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Service
+        fields=['publicPlaceId','amenityId']
+        
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Images
+        fields=['publicPlaceId','path']
+
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Amenities
+        fields=['id','type','name']
+
+class GovernorateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Governate
+        fields='__all__'
