@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from graduationapp.models import Amenities, Governate, TouristaUser,Hotel
-from api.serializer import GovernorateSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
+from api.serializer import AddFarmSerializer, AddRestaurantSerializer, GovernorateSerializer, UpdateDataSerializer, AddUserSerializer,UserReturnSerializer,AddHotelSerializer,ServiceSerializer,ImageSerializer,AmenitySerializer
 # Create your views here.
 
 
@@ -145,3 +145,86 @@ def getGovernorateById(id):
     except Governate.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     return Response(GovernorateSerializer(amenities,many =False).data)
+
+
+@api_view(['POST'])
+def addRestaurant(request):
+    data= request.data
+    restaurantDict = data.get('restaurant')
+    if isinstance(restaurantDict, str):
+        restaurantDict = json.loads(restaurantDict)
+    amenities = data.get('amenities')
+    if isinstance(amenities, str):
+        amenities = json.loads(amenities)
+        amenities = [int(i) for i in amenities]
+    images=request.FILES
+    restaurantSerializer= AddRestaurantSerializer(data=restaurantDict)
+    if restaurantSerializer.is_valid():
+        restaurant= restaurantSerializer.save()
+        publicPlaceId= restaurant.id
+        
+        if isinstance(amenities, Iterable):
+            for amenityId in amenities:
+                serviceSerializer = ServiceSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'amenityId': amenityId,
+                })
+                if serviceSerializer.is_valid():
+                    serviceSerializer.save()
+                else:
+                    return Response(serviceSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+        if isinstance(images, Iterable):    
+            for imageKey in images.keys():
+                imageSerializer = ImageSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'path': images[imageKey],
+                })
+                if imageSerializer.is_valid():
+                    imageSerializer.save()
+                else:
+                    return Response(imageSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response(True,status=status.HTTP_201_CREATED)
+    return Response(restaurantSerializer.errors,status=status.HTTP_400_BAD_REQUEST)  
+
+@api_view(['POST'])
+def addFarm(request):
+    data= request.data
+    farmDict = data.get('farm')
+    if isinstance(farmDict, str):
+        farmDict = json.loads(farmDict)
+    amenities = data.get('amenities')
+    if isinstance(amenities, str):
+        amenities = json.loads(amenities)
+        amenities = [int(i) for i in amenities]
+    images=request.FILES
+    farmSerializer= AddFarmSerializer(data=farmDict)
+    if farmSerializer.is_valid():
+        farm= farmSerializer.save()
+        publicPlaceId= farm.id
+        
+        if isinstance(amenities, Iterable):
+            for amenityId in amenities:
+                serviceSerializer = ServiceSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'amenityId': amenityId,
+                })
+                if serviceSerializer.is_valid():
+                    serviceSerializer.save()
+                else:
+                    return Response(serviceSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+        if isinstance(images, Iterable):    
+            for imageKey in images.keys():
+                imageSerializer = ImageSerializer(data={
+                    'publicPlaceId':publicPlaceId,
+                    'path': images[imageKey],
+                })
+                if imageSerializer.is_valid():
+                    imageSerializer.save()
+                else:
+                    return Response(imageSerializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response(True,status=status.HTTP_201_CREATED)
+    return Response(farmSerializer.errors,status=status.HTTP_400_BAD_REQUEST)  
