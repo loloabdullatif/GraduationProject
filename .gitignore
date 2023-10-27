@@ -11,3 +11,4 @@ api/__pycache__/
 api/migrations/
 
 media/images/
+static/
