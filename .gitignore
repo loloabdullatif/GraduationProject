@@ -5,6 +5,7 @@ graduationapp/__pycache__/
 graduationapp/migrations/
 
 graduationProject/__pycache__/
+graduationProject/config.py
 
 api/__pycache__/
 api/migrations/
