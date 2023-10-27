@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+from graduationProject.config import db_config,allowed_hosts_config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +28,7 @@ SECRET_KEY = 'django-insecure-!qh^k7tq!#y%(+(d4)_@8e-j5z%#*(j=wc^vzt730e&aa+sr3i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = allowed_hosts_config
 
 
 # Application definition
@@ -75,19 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'graduationProject.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'grad',
-        'USER':'root',
-        'PASSWORD':'sari12345',
-        'HOST':'localhost',
-        'PORT':'3306',
-    }
-}
+DATABASES = db_config
 
 
 # Password validation

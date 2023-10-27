@@ -96,10 +96,10 @@ def getHotels(request):
     hotels= Hotel.objects.all()
     hotelsWithDetails = []
     for hotel in hotels:
-        hotelsWithDetails.append(getHotelDetails(hotel))
+        hotelsWithDetails.append(getHotelDetails(hotel,request))
     return Response(hotelsWithDetails,status=status.HTTP_200_OK)
 
-def getHotelDetails(hotel):
+def getHotelDetails(hotel,request):
     services = Service.objects.filter(publicPlaceId= hotel.id)
     servicesIds= []
     for service in services:
@@ -111,7 +111,7 @@ def getHotelDetails(hotel):
     return {
         'hotel': HotelResponseSerializer(hotel).data,
         'amenities': AmenitySerializer(hotelAmenities, many=True).data,
-        'images' : ImageSerializer(hotelImages, many=True).data
+        'images' : ImageSerializer(hotelImages,context={'request':request}, many=True).data
     }   
 def addHotel(request):
     data= request.data
