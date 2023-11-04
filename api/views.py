@@ -120,13 +120,13 @@ def addHotel(request):
     print('Add Hotel Request Received')
     print('Hotel Data Provided:' + getString(request.data))
     hotelDict = data.get('hotel')
-    if isinstance(hotelDict, None):
+    if hotelDict == None:
         return Response(data='No hotel was provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(hotelDict, str):
         hotelDict = json.loads(hotelDict)
     hotelDict['type'] = 'hotel'
     amenities = data.get('amenities')
-    if isinstance(amenities, None):
+    if amenities == None:
         return Response(data='No amenities were provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
@@ -191,13 +191,13 @@ def getGovernorateById(id):
 def addRestaurant(request):
     data = request.data
     restaurantDict = data.get('restaurant')
-    if isinstance(restaurantDict, None):
+    if restaurantDict == None:
         return Response(data='No restaurant was provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(restaurantDict, str):
         restaurantDict = json.loads(restaurantDict)
     restaurantDict['type'] = 'restaurant'
     amenities = data.get('amenities')
-    if isinstance(amenities, None):
+    if amenities == None:
         return Response(data='No amenities were provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
@@ -238,13 +238,13 @@ def addRestaurant(request):
 def addFarm(request):
     data = request.data
     farmDict = data.get('farm')
-    if isinstance(farmDict, None):
+    if farmDict == None:
         return Response(data='No farm was provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(farmDict, str):
         farmDict = json.loads(farmDict)
     farmDict['type'] = 'farm'
     amenities = data.get('amenities')
-    if isinstance(amenities, None):
+    if amenities == None:
         return Response(data='No amenities were provided', status=status.HTTP_400_BAD_REQUEST)
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
