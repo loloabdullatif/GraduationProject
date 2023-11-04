@@ -118,7 +118,7 @@ def getHotelDetails(hotel, request):
 def addHotel(request):
     data = request.data
     print('Add Hotel Request Received')
-    print('Hotel Data Provided:' + request.data)
+    print('Hotel Data Provided:' + getString(request.data))
     hotelDict = data.get('hotel')
     if isinstance(hotelDict, None):
         return Response(data='No hotel was provided', status=status.HTTP_400_BAD_REQUEST)
@@ -347,3 +347,7 @@ class PublicPlaceList(generics.ListAPIView):
     ordering_fields = ['rating', 'numberOfStars']
     filterset_fields = ['streetId']
     search_fields = ['name']
+
+
+def getString(param):
+    return str(param)
