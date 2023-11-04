@@ -1,4 +1,4 @@
-from graduationapp.models import City, Farm, Governate, Street, TouristaUser, Hotel,Amenities,Service,Images,Restaurant #we need the model we want to serialize
+from graduationapp.models import City, Farm, Governate, PublicPlace, Street, TouristaUser, Hotel,Amenities,Service,Images,Restaurant #we need the model we want to serialize
 from rest_framework import serializers 
 
 class AddUserSerializer(serializers.ModelSerializer):
@@ -74,3 +74,11 @@ class StreetSerializer(serializers.ModelSerializer):
     class Meta:
         model=Street
         fields='__all__'
+
+
+class PublicPlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=PublicPlace
+        fields='__all__'
+
+

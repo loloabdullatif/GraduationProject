@@ -15,4 +15,5 @@ urlpatterns = [
     path('governorates/', views.getGovernorates),
     path('cities/', views.getCities),
     path('streets/', views.getStreets),
+    path('places/', views.PublicPlaceList.as_view()),
 ]
