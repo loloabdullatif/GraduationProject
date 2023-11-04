@@ -106,9 +106,7 @@ def getHotelDetails(hotel, request):
     servicesIds = []
     for service in services:
         servicesIds.append(service.id)
-    print(servicesIds)
     hotelAmenities = Amenities.objects.filter(id__in=servicesIds)
-    print(hotelAmenities)
     hotelImages = Images.objects.filter(publicPlaceId=hotel.id)
     return {
         'hotel': HotelResponseSerializer(hotel).data,
@@ -119,7 +117,8 @@ def getHotelDetails(hotel, request):
 
 def addHotel(request):
     data = request.data
-    print(request.data)
+    print('Add Hotel Request Received')
+    print('Hotel Data Provided:' + request.data)
     hotelDict = data.get('hotel')
     if isinstance(hotelDict, None):
         return Response(data='No hotel was provided', status=status.HTTP_400_BAD_REQUEST)
@@ -159,7 +158,7 @@ def addHotel(request):
                     imageSerializer.save()
                 else:
                     return Response(imageSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        print('Add Hotel Request Was Handled Successfully')
         return Response(True, status=status.HTTP_201_CREATED)
     return Response(hotelSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
