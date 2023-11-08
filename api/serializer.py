@@ -1,84 +1,128 @@
-from graduationapp.models import City, Farm, Governate, PublicPlace, Street, TouristaUser, Hotel,Amenities,Service,Images,Restaurant #we need the model we want to serialize
-from rest_framework import serializers 
+
+from graduationapp.models import City, Farm, Governate, PublicPlace, Street, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from rest_framework import serializers
+
 
 class AddUserSerializer(serializers.ModelSerializer):
-    class Meta:#always its name is meta
-        model=TouristaUser
-        fields=['userName','firstName','lastName','password','nationalNumber','birthDate','phoneNumber']
-        
+    class Meta:  # always its name is meta
+        model = TouristaUser
+        fields = ['userName', 'firstName', 'lastName', 'password',
+                  'nationalNumber', 'birthDate', 'phoneNumber']
+
+
 class UserReturnSerializer(serializers.ModelSerializer):
-    class Meta:#always its name is meta
-        model=TouristaUser
-        fields=['id','userName','firstName','lastName','isOwner','nationalNumber','birthDate','phoneNumber']    
-        
+    class Meta:  # always its name is meta
+        model = TouristaUser
+        fields = ['id', 'userName', 'firstName', 'lastName',
+                  'isOwner', 'nationalNumber', 'birthDate', 'phoneNumber']
+
+
 class AddHotelSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Hotel
-        fields=['numberOfRooms','area','numberOfStars','phoneNumber','type','name','streetId','userId']  
+        model = Hotel
+        fields = ['numberOfRooms', 'area', 'numberOfStars',
+                  'phoneNumber', 'type', 'name', 'streetId', 'userId']
+
+
 class UpdateDataSerializer(serializers.ModelSerializer):
-    phoneNumber=serializers.CharField( max_length=10)
-    firstName=serializers.CharField( max_length=10)
-    lastName=serializers.CharField( max_length=10)
-    password=serializers.CharField(max_length=10)
-    nationalNumber=serializers.CharField(max_length=15)
-    birthDate=serializers.DateField()
+    phoneNumber = serializers.CharField(max_length=10)
+    firstName = serializers.CharField(max_length=10)
+    lastName = serializers.CharField(max_length=10)
+    password = serializers.CharField(max_length=10)
+    nationalNumber = serializers.CharField(max_length=15)
+    birthDate = serializers.DateField()
+
     class Meta:
         model = TouristaUser
-        fields=['firstName','lastName','password','nationalNumber','birthDate','phoneNumber']
+        fields = ['firstName', 'lastName', 'password',
+                  'nationalNumber', 'birthDate', 'phoneNumber']
 
-        
-    
+
 class HotelResponseSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Hotel
-        fields='__all__'
+        model = Hotel
+        fields = '__all__'
+
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Service
-        fields=['publicPlaceId','amenityId']
-        
+        model = Service
+        fields = ['publicPlaceId', 'amenityId']
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Images
-        fields=['publicPlaceId','path']
+        model = Images
+        fields = ['publicPlaceId', 'path']
+
 
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
-        model=Amenities
-        fields=['id','type','name']
+        model = Amenities
+        fields = ['id', 'type', 'name']
+
 
 class GovernorateSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Governate
-        fields='__all__'
+        model = Governate
+        fields = '__all__'
 
-        
+
 class AddRestaurantSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Restaurant
-        fields='__all__'  
-        
+        model = Restaurant
+        fields = '__all__'
+
+
 class AddFarmSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Farm
-        fields='__all__'  
-        
+        model = Farm
+        fields = '__all__'
+
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
-        model=City
-        fields='__all__'
+        model = City
+        fields = '__all__'
+
+
 class StreetSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Street
-        fields='__all__'
+        model = Street
+        fields = '__all__'
 
 
 class PublicPlaceSerializer(serializers.ModelSerializer):
     class Meta:
-        model=PublicPlace
-        fields='__all__'
+        model = PublicPlace
+        fields = '__all__'
 
 
+class AddHotelSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(
+        child=serializers.ImageField(allow_empty_file=False, use_url=False),
+        write_only=True
+    )
+    amenities = serializers.ListField(child=serializers.IntegerField())
+    hotel = AddHotelSerializer()
+
+    class Meta:
+        model = Hotel
+        fields = ('hotel', 'images', 'amenities')
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('images')
+        amenities_data = validated_data.pop('amenities')
+        hotel_data = validated_data.pop('hotel')
+
+        hotel = Hotel.objects.create(**hotel_data)
+
+        for image_data in images_data:
+            Images.objects.create(publicPlaceId=hotel, path=image_data)
+
+        for amenity_id in amenities_data:
+            amenity = Amenities.objects.get(id=amenity_id)
+            service = Service.objects.create(
+                publicPlaceId=hotel, amenityId=amenity)
+
+        return hotel

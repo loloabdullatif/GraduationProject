@@ -1,19 +1,30 @@
 from django.urls import path
-from api import views
-
+import api.views.auth_views as auth_views
+import api.views.hotel_views as hotel_views
+import api.views.restaurant_views as restaurant_views
+import api.views.farm_views as farm_views
+import api.views.locations_views as locations_views
+import api.views.amenities_views as amenities_views
+# import views as generic_views
 
 urlpatterns = [
-    path('login/', views.login),
-    path('updateData/<int:id>/', views.updateData),
-    path('users/getById',views.getById),
-    path('createAccount/', views.createAccount),
-    path('hotels/', views.hotels),
-    # path('addHotel/', views.addHotel),
-    path('farms/', views.addFarm),
-    path('restaurants/', views.addRestaurant),
-    path('amenities/', views.getAmenities),
-    path('governorates/', views.getGovernorates),
-    path('cities/', views.getCities),
-    path('streets/', views.getStreets),
-    path('places/', views.PublicPlaceList.as_view()),
+    # User & Auth
+    path('login/', auth_views.login),
+    path('updateData/<int:id>/', auth_views.updateData),
+    path('users/getById', auth_views.getById),
+    path('createAccount/', auth_views.createAccount),
+    # Hotels
+    path('hotels/', hotel_views.hotels),
+    path('hotels/new/', hotel_views.AddHotelAPIView.as_view()),
+    # Farms
+    path('farms/new/', farm_views.addFarm),
+    # Restaurants
+    path('restaurants/new/', restaurant_views.addRestaurant),
+    # Amenities
+    path('amenities/', amenities_views.getAmenities),
+    # Locations
+    path('governorates/', locations_views.getGovernorates),
+    path('cities/', locations_views.getCities),
+    path('streets/', locations_views.getStreets),
+    # Other
 ]
