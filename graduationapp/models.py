@@ -15,7 +15,7 @@ class TouristaUser(AbstractUser):
     phoneNumber=models.CharField(blank=False,max_length=10)
     
     
-    REQUIRED_FIELDS = ['nationalNumber', 'birthDate']
+    REQUIRED_FIELDS = ['nationalNumber', 'birthDate','phoneNumber']
     def __str__(self):
         return f"{ self.pk} {self.username}"
 
