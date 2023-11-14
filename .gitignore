@@ -1,14 +1,10 @@
 .sqllite
 
 
-graduationapp/__pycache__/
-graduationapp/migrations/__pycache__/
+**/__pycache__/
 
-graduationProject/__pycache__/
 graduationProject/config.py
 
-api/__pycache__/
-api/migrations/__pycache__/
 
 media/images/
 static/
