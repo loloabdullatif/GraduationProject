@@ -3,10 +3,13 @@ from typing import Iterable
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from rest_framework import generics
+import rest_framework.filters as filters
 from rest_framework import status
-from api.serializer import AddHotelSerializer, AmenitySerializer, HotelResponseSerializer, ImageSerializer, AddHotelSerializer, ServiceSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelResponseSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceSerializer, ServiceSerializer
 
-from graduationapp.models import Amenities, Hotel, Images, Service
+from graduationapp.models import Amenities, Hotel, Images, PublicPlace, Service
 
 
 @api_view(['GET'])
@@ -105,3 +108,26 @@ class AddHotelAPIView(APIView):
             return Response(True)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PublicPlaceList(generics.ListAPIView):
+    serializer_class = PublicPlaceSerializer
+    queryset = PublicPlace.objects.all()
+    filter_backends = [filters.OrderingFilter,
+    filters.SearchFilter, DjangoFilterBackend]
+    ordering_fields = ['rating', 'numberOfStars']
+    filterset_fields = ['streetId']
+    search_fields = ['name']
+
+
+@api_view(["POST"])
+def addRoom(request):
+    data = request.data
+    roomSerializer = AddRoomSerializer(data=data)
+    if roomSerializer.is_valid():
+        roomSerializer.save()
+        return Response(status=status.HTTP_201_CREATED, data=True)
+
+    return Response(roomSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

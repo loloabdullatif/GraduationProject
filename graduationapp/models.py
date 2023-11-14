@@ -1,27 +1,23 @@
 import datetime
-import enum
 from django.db import models
 #from django.contrib.auth.models import User
 from django.forms import DateTimeField 
 from model_utils.managers import InheritanceManager
+from django.contrib.auth.models import AbstractUser
 #from enumfields import EnumField
 from enum import Enum
-
+from django.conf import settings
 # Create your models here.
 
-class TouristaUser(models.Model):
-    userName= models.CharField(max_length=255,default="",unique=True,blank=False)
-    phoneNumber=models.CharField( max_length=10,default="",blank=False)
-    firstName=models.CharField( max_length=10,default="",blank=False)
-    lastName=models.CharField( max_length=10,default="",blank=False)
-    password=models.CharField(max_length=10,default="",blank=False)
+class TouristaUser(AbstractUser):
     nationalNumber=models.CharField(max_length=15,default="",unique=True,blank=False)
     birthDate=models.DateField(blank=False)
-    isOwner=models.BooleanField(default=False)
+    phoneNumber=models.CharField(blank=False,max_length=10)
     
+    
+    REQUIRED_FIELDS = ['nationalNumber', 'birthDate']
     def __str__(self):
-        return f'{ self.pk} {self.userName} '
-
+        return f"{ self.pk} {self.username}"
 
 
 class Governate(models.Model):
@@ -201,4 +197,43 @@ class Images(models.Model):
     path=models.ImageField(blank=True,upload_to='images/')
 
 
+class TouristDestination(models.Model):
+    cityId = models.ForeignKey(City, on_delete=models.CASCADE)
+    name = models.CharField(max_length=300)
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, max_length=15, default=0.0
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, max_length=15, default=0.0
+    )
+    description = models.CharField(max_length=3000, null=False)
+
+    class Meta:
+        verbose_name_plural = "Tourist Destinations"
+
+    def __str__(self):
+        return self.name
+
+
+class TouristDestinationImage(models.Model):
+    publicPlaceId = models.ForeignKey(
+        TouristDestination, on_delete=models.CASCADE, default=None
+    )
+    path = models.ImageField(blank=True, upload_to="DestinationImages/")
+
+
+class Cuisine(models.Model):
+    CuisineList = (
+        ("Tasting Menu", "Tasting Menu"),
+        ("Buffet Menu", "Buffet Menu"),
+        ("Specials Menu", "Specials Menu"),
+        ("Beverage Menu", "Beverage Menu"),
+        ("Kids Menu", "Kids Menu"),
+    )
+    cuisine = models.CharField(max_length=30, choices=CuisineList)
+
+
+class RestaurantCuisine(models.Model):
+    restaurantId = models.ForeignKey(Restaurant, on_delete=models.CASCADE, default=None)
+    cuisineId = models.ForeignKey(Cuisine, on_delete=models.CASCADE, default=None)
 

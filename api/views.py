@@ -40,7 +40,7 @@ class PublicPlaceList(generics.ListAPIView):
     serializer_class = PublicPlaceSerializer
     queryset = PublicPlace.objects.all()
     filter_backends = [filters.OrderingFilter,
-                       filters.SearchFilter, DjangoFilterBackend]
+    filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating', 'numberOfStars']
     filterset_fields = ['streetId']
     search_fields = ['name']

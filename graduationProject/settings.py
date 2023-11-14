@@ -126,3 +126,5 @@ STATIC_FILES_DIRS = (os.path.join(BASE_DIR, 'static'))
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'graduationapp.TouristaUser'

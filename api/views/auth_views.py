@@ -11,10 +11,13 @@ def login(request):
     userName = request.data.get('userName')
     password = request.data.get('password')
     try:
-        user = TouristaUser.objects.get(userName=userName, password=password)
+        user = TouristaUser.objects.get(username=userName)
+        if user.check_password(password):
+            return Response(UserReturnSerializer(user).data)
+        else:
+            return Response(False)    
     except TouristaUser.DoesNotExist:
         return Response(False)
-    return Response(UserReturnSerializer(user).data)
 
 
 @api_view(['GET'])
@@ -32,6 +35,8 @@ def createAccount(request):
     serializer = AddUserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
+        user.set_password(request.data.get('password'))
+        user.save()
         return Response(UserReturnSerializer(user).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

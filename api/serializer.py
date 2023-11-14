@@ -1,9 +1,13 @@
 
-from graduationapp.models import City, Farm, Governate, PublicPlace, Street, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from graduationapp.models import City, Farm, Governate, PublicPlace, Room, Street, Table, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
 
 
+
 class AddUserSerializer(serializers.ModelSerializer):
+    userName = serializers.CharField( source= 'username')
+    firstName = serializers.CharField(source= 'first_name')
+    lastName = serializers.CharField(source= 'last_name')
     class Meta:  # always its name is meta
         model = TouristaUser
         fields = ['userName', 'firstName', 'lastName', 'password',
@@ -11,10 +15,14 @@ class AddUserSerializer(serializers.ModelSerializer):
 
 
 class UserReturnSerializer(serializers.ModelSerializer):
-    class Meta:  # always its name is meta
+    userName = serializers.CharField( source= 'username')
+    firstName = serializers.CharField(source= 'first_name')
+    lastName = serializers.CharField(source= 'last_name')
+    isOwner = serializers.BooleanField(default=True) #Modify later when user ownership status is better understood
+    class Meta:  
         model = TouristaUser
         fields = ['id', 'userName', 'firstName', 'lastName',
-                  'isOwner', 'nationalNumber', 'birthDate', 'phoneNumber']
+                   'nationalNumber', 'birthDate', 'phoneNumber','isOwner']
 
 
 class AddHotelSerializer(serializers.ModelSerializer):
@@ -126,3 +134,40 @@ class AddHotelSerializer(serializers.ModelSerializer):
                 publicPlaceId=hotel, amenityId=amenity)
 
         return hotel
+
+
+
+class PublicPlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicPlace
+        fields = "__all__"
+
+
+class AddRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = "__all__"
+
+
+class AddTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Table
+        fields = "__all__"
+
+
+class RestaurantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = "__all__"
+
+
+class FarmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Farm
+        fields = "__all__"
+
+
+class TableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Table
+        fields = "__all__"
