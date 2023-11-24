@@ -5,6 +5,7 @@ import api.views.restaurant_views as restaurant_views
 import api.views.farm_views as farm_views
 import api.views.locations_views as locations_views
 import api.views.amenities_views as amenities_views
+import api.views.destinations_views as destinations_views
 # import views as generic_views
 
 urlpatterns = [
@@ -34,13 +35,7 @@ urlpatterns = [
     path('cities/', locations_views.getCities),
     path('streets/', locations_views.getStreets),
     # Other
-    
-    
-]
+    path('destinations/', destinations_views.getDestinations),
 
-    
-    
-    
-    
-    
-    
+
+]

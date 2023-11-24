@@ -1,13 +1,13 @@
 
-from graduationapp.models import City, Farm, Governate, PublicPlace, Room, Street, Table, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from graduationapp.models import City, Farm, Governate, PublicPlace, Room, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
 
 
-
 class AddUserSerializer(serializers.ModelSerializer):
-    userName = serializers.CharField( source= 'username')
-    firstName = serializers.CharField(source= 'first_name')
-    lastName = serializers.CharField(source= 'last_name')
+    userName = serializers.CharField(source='username')
+    firstName = serializers.CharField(source='first_name')
+    lastName = serializers.CharField(source='last_name')
+
     class Meta:  # always its name is meta
         model = TouristaUser
         fields = ['userName', 'firstName', 'lastName', 'password',
@@ -15,14 +15,16 @@ class AddUserSerializer(serializers.ModelSerializer):
 
 
 class UserReturnSerializer(serializers.ModelSerializer):
-    userName = serializers.CharField( source= 'username')
-    firstName = serializers.CharField(source= 'first_name')
-    lastName = serializers.CharField(source= 'last_name')
-    isOwner = serializers.BooleanField(default=True) #Modify later when user ownership status is better understood
-    class Meta:  
+    userName = serializers.CharField(source='username')
+    firstName = serializers.CharField(source='first_name')
+    lastName = serializers.CharField(source='last_name')
+    # Modify later when user ownership status is better understood
+    isOwner = serializers.BooleanField(default=True)
+
+    class Meta:
         model = TouristaUser
         fields = ['id', 'userName', 'firstName', 'lastName',
-                   'nationalNumber', 'birthDate', 'phoneNumber','isOwner']
+                  'nationalNumber', 'birthDate', 'phoneNumber', 'isOwner']
 
 
 class AddHotelSerializer(serializers.ModelSerializer):
@@ -136,7 +138,6 @@ class AddHotelSerializer(serializers.ModelSerializer):
         return hotel
 
 
-
 class PublicPlaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicPlace
@@ -171,3 +172,43 @@ class TableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
         fields = "__all__"
+
+
+class TouristDestinationBaseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TouristDestination
+        fields = "__all__"
+
+
+class TouristDestinationImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TouristDestinationImage
+        fields = ['path']
+
+
+class TouristDestinationDisplaySerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField(read_only=True)
+
+    def get_images(self, touristDestination):
+        request = self.context.get('request')
+        imagesObjects = TouristDestinationImage.objects.filter(
+            publicPlaceId=touristDestination.id)
+
+        images = []
+        for image in imagesObjects:
+            images.append(TouristDestinationImageSerializer(
+                image, context={'request': request}).data['path'])
+
+        return images
+
+    class Meta:
+        model = TouristDestination
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return {
+            'images': data.pop('images'),
+            'touristDestination': data
+        }
