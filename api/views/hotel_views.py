@@ -29,10 +29,10 @@ def getHotels(request):
 
 def getHotelDetails(hotel, request):
     services = Service.objects.filter(publicPlaceId=hotel.id)
-    servicesIds = []
+    amenitiesIds = []
     for service in services:
-        servicesIds.append(service.id)
-    hotelAmenities = Amenities.objects.filter(id__in=servicesIds)
+        amenitiesIds.append(service.amenityId)
+    hotelAmenities = Amenities.objects.filter(id__in=amenitiesIds)
     hotelImages = Images.objects.filter(publicPlaceId=hotel.id)
     return {
         'hotel': HotelResponseSerializer(hotel).data,
