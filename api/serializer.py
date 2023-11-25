@@ -212,3 +212,22 @@ class TouristDestinationDisplaySerializer(serializers.ModelSerializer):
             'images': data.pop('images'),
             'touristDestination': data
         }
+
+
+class PublicPlaceFullAddressSerializer(serializers.ModelSerializer):
+    street = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
+    governorate = serializers.SerializerMethodField()
+
+    def get_street(self, publicPlace):
+        return StreetSerializer(publicPlace.streetId).data
+
+    def get_city(self, publicPlace):
+        return CitySerializer(publicPlace.streetId.cityId).data
+
+    def get_governorate(self, publicPlace):
+        return GovernorateSerializer(publicPlace.streetId.cityId.governateId).data
+
+    class Meta:
+        model = PublicPlace
+        fields = ['street', 'city', 'governorate']

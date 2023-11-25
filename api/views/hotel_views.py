@@ -7,7 +7,7 @@ from rest_framework import generics
 import rest_framework.filters as filters
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelResponseSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceSerializer, ServiceSerializer
+from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelResponseSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceFullAddressSerializer, PublicPlaceSerializer, ServiceSerializer
 
 from graduationapp.models import Amenities, Hotel, Images, PublicPlace, Service
 
@@ -34,10 +34,12 @@ def getHotelDetails(hotel, request):
         hotelAmenities.append(service.amenityId)
     # hotelAmenities = Amenities.objects.filter(id__in=amenitiesIds)
     hotelImages = Images.objects.filter(publicPlaceId=hotel.id)
+
     return {
         'hotel': HotelResponseSerializer(hotel).data,
         'amenities': AmenitySerializer(hotelAmenities, many=True).data,
-        'images': ImageSerializer(hotelImages, context={'request': request}, many=True).data
+        'images': ImageSerializer(hotelImages, context={'request': request}, many=True).data,
+        'location': PublicPlaceFullAddressSerializer(hotel).data
     }
 
 
@@ -114,7 +116,7 @@ class PublicPlaceList(generics.ListAPIView):
     serializer_class = PublicPlaceSerializer
     queryset = PublicPlace.objects.all()
     filter_backends = [filters.OrderingFilter,
-    filters.SearchFilter, DjangoFilterBackend]
+                       filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating', 'numberOfStars']
     filterset_fields = ['streetId']
     search_fields = ['name']
@@ -129,5 +131,3 @@ def addRoom(request):
         return Response(status=status.HTTP_201_CREATED, data=True)
 
     return Response(roomSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
