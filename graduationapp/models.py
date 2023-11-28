@@ -234,14 +234,14 @@ class TouristDestinationImage(models.Model):
 
 
 class Cuisine(models.Model):
-    CuisineList = (
-        ("Tasting Menu", "Tasting Menu"),
-        ("Buffet Menu", "Buffet Menu"),
-        ("Specials Menu", "Specials Menu"),
-        ("Beverage Menu", "Beverage Menu"),
-        ("Kids Menu", "Kids Menu"),
-    )
-    cuisine = models.CharField(max_length=30, choices=CuisineList)
+    # CuisineList = (
+    #     ("Tasting Menu", "Tasting Menu"),
+    #     ("Buffet Menu", "Buffet Menu"),
+    #     ("Specials Menu", "Specials Menu"),
+    #     ("Beverage Menu", "Beverage Menu"),
+    #     ("Kids Menu", "Kids Menu"),
+    # )
+    cuisine = models.CharField(max_length=30)
 
 
 class RestaurantCuisine(models.Model):
