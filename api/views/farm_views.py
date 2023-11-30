@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework import generics
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddFarmSerializer, AmenitySerializer, FarmSerializer, ImageSerializer, ServiceSerializer
+from api.serializer import AddFarmSerializer, AmenitySerializer, FarmDetailsSerializer, ImageSerializer, ServiceSerializer
 from graduationapp.models import Farm, Images, Service
 
 
@@ -75,7 +75,7 @@ def allFarms(request):
         ).data
         farmsReturnObject.append(
             {
-                "farm": FarmSerializer(farm).data,
+                "farm": FarmDetailsSerializer(farm).data,
                 "amenities": serializedAmenities,
                 "images": serializerImages,
             }
@@ -84,12 +84,12 @@ def allFarms(request):
 
     return Response(
         status=status.HTTP_200_OK,
-        data=FarmSerializer(farms, many=True).data,
+        data=FarmDetailsSerializer(farms, many=True).data,
     )
 
 
-class farmSearch(generics.ListAPIView):
-    serializer_class = FarmSerializer
+class FarmSearch(generics.ListAPIView):
+    serializer_class = FarmDetailsSerializer
     queryset = Farm.objects.all()
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]

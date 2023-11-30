@@ -29,7 +29,7 @@ urlpatterns = [
     # Farms
     path('farms/new/', farm_views.addFarm),
     path("allFarms/", farm_views.allFarms),
-    path("farmsSearch/", farm_views.farmSearch.as_view()),
+    path("farmsSearch/", farm_views.FarmSearch.as_view()),
 
     # Restaurants
     path('restaurants/new/', restaurant_views.addRestaurant),

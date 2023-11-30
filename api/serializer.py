@@ -1,5 +1,5 @@
 
-from graduationapp.models import City, Farm,Cuisine, Governate, PublicPlace, Room, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from graduationapp.models import City, Farm,Cuisine, Governate, PublicPlace, RestaurantCuisine, Room, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
 
 
@@ -156,20 +156,125 @@ class AddTableSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RestaurantSerializer(serializers.ModelSerializer):
+class RestaurantDetailsSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField(read_only=True)
+    cuisines = serializers.SerializerMethodField(read_only=True)
+    
+    def get_details(self, restaurant):
+        request = self.context.get('request')
+        return PublicPlaceDetailsSerializer(restaurant,context={'request': request}).data
+    
+    def get_cuisines(self, restaurant):
+        restaurantCuisines = RestaurantCuisine.objects.filter(restaurantId = restaurant.id)
+        cuisines = []
+        for restaurantCuisine in restaurantCuisines:
+            cuisines.append(restaurantCuisine.cuisineId)
+        return CuisineSerializer(cuisines,many=True).data
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        
+        location = data.get('details').get('location')
+        amenities = data.get('details').get('amenities')
+        images = data.get('details').get('images')
+        data.pop('details')
+        
+        return {
+            'location': location,
+            'amenities': amenities,
+            'images':images,
+            'cuisines': data.pop('cuisines'),
+            'restaurant': data
+        }
     class Meta:
         model = Restaurant
         fields = "__all__"
 
 
-class FarmSerializer(serializers.ModelSerializer):
+class FarmDetailsSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField(read_only=True)
+    
+    def get_details(self, farm):
+        request = self.context.get('request')
+        return PublicPlaceDetailsSerializer(farm,context={'request': request}).data
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        
+        location = data.get('details').get('location')
+        amenities = data.get('details').get('amenities')
+        images = data.get('details').get('images')
+        data.pop('details')
+        
+        return {
+            'location': location,
+            'amenities': amenities,
+            'images':images,
+            'farm': data
+        }
     class Meta:
         model = Farm
         fields = "__all__"
-class HotelSerializer(serializers.ModelSerializer):
+class HotelDetailsSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField(read_only=True)
+    
+    def get_details(self, hotel):
+        request = self.context.get('request')
+        return PublicPlaceDetailsSerializer(hotel,context={'request': request}).data
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        
+        location = data.get('details').get('location')
+        amenities = data.get('details').get('amenities')
+        images = data.get('details').get('images')
+        data.pop('details')
+        
+        return {
+            'location': location,
+            'amenities': amenities,
+            'images':images,
+            'hotel': data
+        }
     class Meta:
         model = Hotel
         fields = "__all__"
+    
+    
+class PublicPlaceDetailsSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField(read_only=True)
+    amenities = serializers.SerializerMethodField(read_only=True)
+    
+    
+    def get_amenities(self, publicPlace):
+        services = Service.objects.filter(publicPlaceId=publicPlace.id)
+        amenities = []
+        for service in services:
+            amenities.append(service.amenityId)
+            
+        return AmenitySerializer(amenities,many=True).data
+    def get_images(self, hotel):
+        request = self.context.get('request')
+        imagesObjects = TouristDestinationImage.objects.filter(
+            publicPlaceId=hotel.id)
+
+        images = []
+        for image in imagesObjects:
+            images.append(TouristDestinationImageSerializer(
+                image, context={'request': request}).data['path'])
+
+        return images
+    class Meta:
+        model = PublicPlace
+        fields = "__all__"
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return {
+            'location': PublicPlaceFullAddressSerializer(instance).data,
+            'amenities': data.pop('amenities'),
+            'images': data.pop('images'),
+        }
 
 
 class TableSerializer(serializers.ModelSerializer):

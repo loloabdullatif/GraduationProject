@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework import generics
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantSerializer, ServiceSerializer, TableSerializer
+from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantDetailsSerializer, ServiceSerializer, TableSerializer
 from graduationapp.models import Images, Restaurant, Service, Table
 
 
@@ -99,7 +99,7 @@ def allRestaurants(request):
         ).data
         restaurantsReturnObject.append(
             {
-                "restaurant": RestaurantSerializer(restaurant).data,
+                "restaurant": RestaurantDetailsSerializer(restaurant).data,
                 "amenities": serializedAmenities,
                 "images": serializerImages,
             }
@@ -108,7 +108,7 @@ def allRestaurants(request):
 
     return Response(
         status=status.HTTP_200_OK,
-        data=RestaurantSerializer(restaurants, many=True).data,
+        data=RestaurantDetailsSerializer(restaurants, many=True).data,
     )
 
 
@@ -123,7 +123,7 @@ def allTables(request):
     
     
 class RestaurantSearch(generics.ListAPIView):
-    serializer_class = RestaurantSerializer
+    serializer_class = RestaurantDetailsSerializer
     queryset = Restaurant.objects.all()
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]
