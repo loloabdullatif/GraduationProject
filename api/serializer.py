@@ -255,11 +255,12 @@ class PublicPlaceDetailsSerializer(serializers.ModelSerializer):
         return AmenitySerializer(amenities,many=True).data
     def get_images(self, hotel):
         request = self.context.get('request')
-        imagesObjects = TouristDestinationImage.objects.filter(
+        imagesObjects = Images.objects.filter(
             publicPlaceId=hotel.id)
 
         images = []
         for image in imagesObjects:
+            # TODO: change this serializer
             images.append(TouristDestinationImageSerializer(
                 image, context={'request': request}).data['path'])
 
