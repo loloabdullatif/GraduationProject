@@ -346,6 +346,10 @@ class CuisineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cuisine
         fields = "__all__"
+class RestaurantCuisineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestaurantCuisine
+        fields = "__all__"
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room

@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework import generics
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantDetailsSerializer, ServiceSerializer, TableSerializer
+from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantCuisineSerializer, RestaurantDetailsSerializer, ServiceSerializer, TableSerializer
 from graduationapp.models import Images, Restaurant, Service, Table
 
 
@@ -25,6 +25,12 @@ def addRestaurant(request):
     if isinstance(amenities, str):
         amenities = json.loads(amenities)
         amenities = [int(i) for i in amenities]
+    cuisines = data.get('cuisines')
+    if cuisines == None:
+        return Response(data='No cuisines were provided', status=status.HTTP_400_BAD_REQUEST)
+    if isinstance(cuisines, str):
+        cuisines = json.loads(cuisines)
+        cuisines = [int(i) for i in cuisines]
     images = request.FILES
     restaurantSerializer = AddRestaurantSerializer(data=restaurantDict)
     if restaurantSerializer.is_valid():
@@ -41,6 +47,17 @@ def addRestaurant(request):
                     serviceSerializer.save()
                 else:
                     return Response(serviceSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+        if isinstance(cuisines, Iterable):
+            for cuisineId in cuisines:
+                restaurantCuisineSerializer = RestaurantCuisineSerializer(data={
+                    'restaurantId': publicPlaceId,
+                    'cuisineId': cuisineId,
+                })
+                if restaurantCuisineSerializer.is_valid():
+                    restaurantCuisineSerializer.save()
+                else:
+                    return Response(restaurantCuisineSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         if isinstance(images, Iterable):
             for imageKey in images.keys():
@@ -57,15 +74,16 @@ def addRestaurant(request):
     return Response(restaurantSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])
-def addRoom(request):
-    data = request.data
-    roomSerializer = AddRoomSerializer(data=data)
-    if roomSerializer.is_valid():
-        roomSerializer.save()
-        return Response(status=status.HTTP_201_CREATED, data=True)
+# TODO: Remove later
+# @api_view(["POST"])
+# def addRoom(request):
+#     data = request.data
+#     roomSerializer = AddRoomSerializer(data=data)
+#     if roomSerializer.is_valid():
+#         roomSerializer.save()
+#         return Response(status=status.HTTP_201_CREATED, data=True)
 
-    return Response(roomSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     return Response(roomSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Add table
