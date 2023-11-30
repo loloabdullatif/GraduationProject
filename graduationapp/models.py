@@ -84,7 +84,6 @@ class Hotel(PublicPlace):
 
 class Restaurant(PublicPlace):
     openTime = models.TimeField()
-    menuType = models.CharField(max_length=500, default="")
 
     class Meta:
         verbose_name_plural = 'restaurants'
