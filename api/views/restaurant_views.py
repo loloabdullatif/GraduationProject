@@ -3,7 +3,9 @@ from typing import Iterable
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework import generics
+import rest_framework.filters as filters
+from django_filters.rest_framework import DjangoFilterBackend
 from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantSerializer, ServiceSerializer, TableSerializer
 from graduationapp.models import Images, Restaurant, Service, Table
 
@@ -118,3 +120,13 @@ def allTables(request):
         status=status.HTTP_200_OK,
         data=TableSerializer(tables, many=True).data,
     )
+    
+    
+class RestaurantSearch(generics.ListAPIView):
+    serializer_class = RestaurantSerializer
+    queryset = Restaurant.objects.all()
+    filter_backends = [filters.OrderingFilter,
+                       filters.SearchFilter, DjangoFilterBackend]
+    ordering_fields = ['rating']
+    filterset_fields = ['streetId']
+    search_fields = ['name']

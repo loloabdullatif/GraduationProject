@@ -7,7 +7,7 @@ from rest_framework import generics
 import rest_framework.filters as filters
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelResponseSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceFullAddressSerializer, PublicPlaceSerializer, ServiceSerializer
+from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelResponseSerializer, HotelSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceFullAddressSerializer, PublicPlaceSerializer, ServiceSerializer
 
 from graduationapp.models import Amenities, Hotel, Images, PublicPlace, Service
 
@@ -112,9 +112,9 @@ class AddHotelAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PublicPlaceList(generics.ListAPIView):
-    serializer_class = PublicPlaceSerializer
-    queryset = PublicPlace.objects.all()
+class HotelSearch(generics.ListAPIView):
+    serializer_class = HotelSerializer
+    queryset = Hotel.objects.all()
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating', 'numberOfStars']
