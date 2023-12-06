@@ -14,7 +14,7 @@ class TouristaUser(AbstractUser):
     nationalNumber = models.CharField(
         max_length=15, default="", unique=True, blank=False)
     birthDate = models.DateField(blank=False)
-    phoneNumber = models.CharField(blank=False, max_length=10)
+    phoneNumber = models.CharField(blank=False, max_length=10, unique=True)
 
     REQUIRED_FIELDS = ['nationalNumber', 'birthDate', 'phoneNumber']
 
@@ -90,6 +90,7 @@ class Restaurant(PublicPlace):
 
 
 class Table(models.Model):
+    restaurantId=models.ForeignKey(Restaurant, on_delete=models.CASCADE, default=None)
     tableNumber = models.IntegerField(default=1)
 
 
@@ -98,16 +99,6 @@ class TableBooking(models.Model):
     checkInTime = models.DateTimeField(null=True, blank=True)
     checkoutTime = models.DateTimeField(null=True, blank=True)
 
-# class MenuType(models.Model):
-#     restaurantId= models.ForeignKey(Restaurant, on_delete=models.CASCADE,default=None)
-#     menuTypeList = (
-#         ('Tasting Menu', 'Tasting Menu'),
-#         ('Buffet Menu', 'Buffet Menu'),
-#         ('Specials Menu', 'Specials Menu'),
-#         ('Beverage Menu', 'Beverage Menu'),
-#         ('Kids Menu', 'Kids Menu')
-#     )
-#     menuType= models.CharField(max_length=30,choices=menuTypeList)
 
 
 class Farm(PublicPlace):

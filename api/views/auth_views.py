@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from rest_framework.response import Response
-from api.serializer import AddUserSerializer, UpdateDataSerializer, UserReturnSerializer
-from graduationapp.models import TouristaUser
+from api.serializer import AddUserSerializer, FarmDetailsSerializer, HotelDetailsSerializer, RestaurantDetailsSerializer, UpdateDataSerializer, UserReturnSerializer
+from graduationapp.models import Farm, Hotel, PublicPlace, Restaurant, TouristaUser
 
 
 @api_view(['POST'])
@@ -60,3 +60,21 @@ def updateData(request, id):
         return Response(data.data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def getMyProperties(request):
+    userId= request.GET.get('userId')
+    if(userId==None):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    restaurants=Restaurant.objects.filter(userId=userId)
+    hotels=Hotel.objects.filter(userId=userId)
+    farms=Farm.objects.filter(userId=userId)
+    return Response(
+        data={
+            'hotels':HotelDetailsSerializer(hotels,many=True).data,
+            'restaurants':RestaurantDetailsSerializer(restaurants,many=True).data,
+            'farms':FarmDetailsSerializer(farms,many=True).data,
+        }
+    )
+    

@@ -17,14 +17,13 @@ urlpatterns = [
     path('users/getById', auth_views.getById),
     path('createAccount/', auth_views.createAccount),
     # Public Places
+    path('myProperties/',auth_views.getMyProperties),
     # Hotels
     path('hotels/', hotel_views.hotels),
     path('hotels/new/', hotel_views.AddHotelAPIView.as_view()),
-    path("addRoom/", hotel_views.addRoom),
+    path("addRoom/", room_views.addRoom),
     path("hotelsSearch/", hotel_views.HotelSearch.as_view()),
-    #room
-    # TODO: 
-    path("allRooms/", room_views.allRooms),
+    path("hotelRooms/", room_views.hotelRooms),
 
     # Farms
     path('farms/new/', farm_views.addFarm),
@@ -34,7 +33,7 @@ urlpatterns = [
     # Restaurants
     path('restaurants/new/', restaurant_views.addRestaurant),
     path("allRestaurants/", restaurant_views.allRestaurants),
-    path("allTables/", restaurant_views.allTables),
+    path("restaurantTables/", restaurant_views.restaurantTables),
     path("addTable/", restaurant_views.addTable),
     path("restaurantsSearch/", restaurant_views.RestaurantSearch.as_view()),
 

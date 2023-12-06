@@ -52,13 +52,3 @@ class HotelSearch(generics.ListAPIView):
     filterset_fields = ['streetId']
     search_fields = ['name']
 
-
-@api_view(["POST"])
-def addRoom(request):
-    data = request.data
-    roomSerializer = AddRoomSerializer(data=data)
-    if roomSerializer.is_valid():
-        roomSerializer.save()
-        return Response(status=status.HTTP_201_CREATED, data=True)
-
-    return Response(roomSerializer.errors, status=status.HTTP_400_BAD_REQUEST)

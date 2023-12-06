@@ -90,12 +90,10 @@ def addRestaurant(request):
 @api_view(["POST"])
 def addTable(request):
     data = request.data
-    restaurantId = Restaurant.id
     tableSerializer = AddTableSerializer(data=data)
     if tableSerializer.is_valid():
         tableSerializer.save()
         return Response(status=status.HTTP_201_CREATED, data=True)
-
     return Response(tableSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -132,8 +130,13 @@ def allRestaurants(request):
 
 
 @api_view(["GET"])
-def allTables(request):
-    tables = Table.objects.all()
+def restaurantTables(request):
+    restaurantId=request.GET.get("restaurantId")
+    if(restaurantId==None):
+        return Response(
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    tables = Table.objects.filter(restaurantId=restaurantId)
     return Response(
         status=status.HTTP_200_OK,
         data=TableSerializer(tables, many=True).data,
