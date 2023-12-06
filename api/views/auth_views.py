@@ -15,7 +15,7 @@ def login(request):
         if user.check_password(password):
             return Response(UserReturnSerializer(user).data)
         else:
-            return Response(False)    
+            return Response(False)
     except TouristaUser.DoesNotExist:
         return Response(False)
 
@@ -61,20 +61,20 @@ def updateData(request, id):
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 def getMyProperties(request):
-    userId= request.GET.get('userId')
-    if(userId==None):
+    userId = request.GET.get('userId')
+    if (userId == None):
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-    restaurants=Restaurant.objects.filter(userId=userId)
-    hotels=Hotel.objects.filter(userId=userId)
-    farms=Farm.objects.filter(userId=userId)
+
+    restaurants = Restaurant.objects.filter(userId=userId)
+    hotels = Hotel.objects.filter(userId=userId)
+    farms = Farm.objects.filter(userId=userId)
     return Response(
         data={
-            'hotels':HotelDetailsSerializer(hotels,many=True).data,
-            'restaurants':RestaurantDetailsSerializer(restaurants,many=True).data,
-            'farms':FarmDetailsSerializer(farms,many=True).data,
+            'hotels': HotelDetailsSerializer(hotels, context={'request': request}, many=True).data,
+            'restaurants': RestaurantDetailsSerializer(restaurants, context={'request': request}, many=True).data,
+            'farms': FarmDetailsSerializer(farms, context={'request': request}, many=True).data,
         }
     )
-    
