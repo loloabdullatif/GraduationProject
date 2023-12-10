@@ -63,7 +63,11 @@ class PublicPlace(models.Model):
     phoneNumber = models.CharField(max_length=10, default="")
     rating = models.IntegerField(default=1)
     area = models.FloatField(max_length=20, default="")
-    # publicPlaceImage= models.ImageField(null=True,blank=True,upload_to='images/')
+    facebookLink = models.CharField(max_length=255, null=True, blank=True)
+    instagramLink = models.CharField(max_length=255,  null=True, blank=True)
+    kilometersFromCityCenter = models.IntegerField(default=1)
+    policies = models.CharField(max_length=255, default="")
+    cancellationPolicy = models.CharField(max_length=255, default="")
 
     class Meta:
         verbose_name_plural = 'public places'
@@ -90,15 +94,23 @@ class Restaurant(PublicPlace):
 
 
 class Table(models.Model):
-    restaurantId=models.ForeignKey(Restaurant, on_delete=models.CASCADE, default=None)
+    restaurantId = models.ForeignKey(
+        Restaurant, on_delete=models.CASCADE, default=None)
     tableNumber = models.IntegerField(default=1)
+    capacity = models.IntegerField(default=4)
+
+    tableTypes = (
+        ('standard', 'Standard'),
+        ('bar', 'Bar'),
+        ('high_top', 'High Top')
+    )
+    tableType = models.CharField(default=1, max_length=20, choices=tableTypes)
 
 
 class TableBooking(models.Model):
     price = models.FloatField(max_length=20, default="")
     checkInTime = models.DateTimeField(null=True, blank=True)
     checkoutTime = models.DateTimeField(null=True, blank=True)
-
 
 
 class Farm(PublicPlace):
