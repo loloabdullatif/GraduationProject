@@ -144,8 +144,8 @@ class Room(models.Model):
 class RoomBooking(models.Model):
     userId = models.ForeignKey(
         TouristaUser, on_delete=models.CASCADE, default=None)
-    roomId = models.OneToOneField(
-        Room, on_delete=models.CASCADE, related_name="roomId", default=None)
+    roomId = models.ForeignKey(
+        Room, on_delete=models.CASCADE, related_name="roomBooking", default=None)
 
     price = models.FloatField(max_length=20, default="")
     checkInDate = models.DateField(default=datetime.date.today)
