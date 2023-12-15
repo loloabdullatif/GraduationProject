@@ -23,7 +23,8 @@ urlpatterns = [
     path('hotels/new/', hotel_views.AddHotelAPIView.as_view()),
     path("addRoom/", room_views.addRoom),
     path("hotelsSearch/", hotel_views.HotelSearch.as_view()),
-    path("hotels/<int:hotelId>/availableRooms/", hotel_views.getAvailableRooms),
+    path("hotels/<int:hotelId>/availableRooms/", room_views.getAvailableRooms),
+    path("bookRoom/", room_views.bookRoom),
     # path("hotelRooms/", room_views.hotelRooms),
 
     # Farms
