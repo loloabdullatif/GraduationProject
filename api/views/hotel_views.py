@@ -76,23 +76,40 @@ def getAvailableRooms(request, hotelId):
     for booking in hotelBookings:
         if (excludedRooms.__contains__(booking.roomId)):
             continue
-        if (checkInDate <= booking.checkInDate) and (checkOutDate >= booking.checkoutDate):
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkOutDate=checkOutDate)):
             excludedRooms.append(booking.roomId)
-            print('excluded on outer')
-            continue
-        if (checkInDate >= booking.checkInDate) and (checkOutDate <= booking.checkoutDate):
-            excludedRooms.append(booking.roomId)
-            print('excluded on inner')
-            continue
-        if (checkOutDate >= booking.checkInDate) and (checkInDate <= booking.checkoutDate):
-            excludedRooms.append(booking.roomId)
-            print('excluded on 1')
-            continue
-        if checkInDate <= booking.checkoutDate and checkOutDate >= booking.checkoutDate:
-            print('excluded on 2')
-            excludedRooms.append(booking.roomId)
-            continue
+
     numberOfNights = (checkOutDate - checkInDate).days + 1
     availableRooms = Room.objects.exclude(
         Q(pk__in=[room.pk for room in excludedRooms]) | Q(numberOfPeople__lt=numberOfPeople))
     return Response(status=status.HTTP_200_OK, data=ReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
+
+
+def checkRoomAvailability(room, checkInDate, checkOutDate):
+    roomBookings = RoomBooking.objects.filter(roomId=room.id)
+    if (checkBookingListOverlappingAgainstRange(bookings=roomBookings, checkInDate=checkInDate, checkOutDate=checkOutDate)):
+        return False
+    return True
+
+
+def checkBookingListOverlappingAgainstRange(bookings, checkInDate, checkOutDate):
+    for booking in bookings:
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkOutDate=checkOutDate)):
+            return True
+    return False
+
+
+def checkBookingOverlappingAgainstRange(booking, checkInDate, checkOutDate):
+    if (checkInDate <= booking.checkInDate) and (checkOutDate >= booking.checkoutDate):
+        print('excluded on outer')
+        return True
+    if (checkInDate >= booking.checkInDate) and (checkOutDate <= booking.checkoutDate):
+        print('excluded on inner')
+        return True
+    if (checkOutDate >= booking.checkInDate) and (checkInDate <= booking.checkoutDate):
+        print('excluded on 1')
+        return True
+    if checkInDate <= booking.checkoutDate and checkOutDate >= booking.checkoutDate:
+        print('excluded on 2')
+        return True
+    return False
