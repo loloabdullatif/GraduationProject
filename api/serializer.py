@@ -150,6 +150,28 @@ class AddRoomSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ReservationRoomSerializer(serializers.ModelSerializer):
+    totalPrice = serializers.SerializerMethodField(read_only=True)
+
+    def get_totalPrice(self, room):
+        numberOfNights = self.context.get('numberOfNights')
+        return numberOfNights*room.price
+
+    class Meta:
+        model = Room
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        totalPrice = data.pop('totalPrice')
+
+        return {
+            'totalPrice': totalPrice,
+            'room': data,
+        }
+
+
 class AddTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table

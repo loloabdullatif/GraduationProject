@@ -8,8 +8,8 @@ from rest_framework import generics
 import rest_framework.filters as filters
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelDetailsSerializer, HotelResponseSerializer, PublicPlaceDetailsSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceFullAddressSerializer, PublicPlaceSerializer, ServiceSerializer
-
+from api.serializer import AddHotelSerializer, AddRoomSerializer, AmenitySerializer, HotelDetailsSerializer, HotelResponseSerializer, PublicPlaceDetailsSerializer, ImageSerializer, AddHotelSerializer, PublicPlaceFullAddressSerializer, PublicPlaceSerializer, ReservationRoomSerializer, ServiceSerializer
+from django.db.models import Q
 from graduationapp.models import Amenities, Hotel, Images, PublicPlace, Room, RoomBooking, Service
 
 
@@ -57,19 +57,23 @@ class HotelSearch(generics.ListAPIView):
 @api_view(['GET'])
 def getAvailableRooms(request, hotelId):
     queryParams = request.GET
-    checkInDate = datetime.strptime(
-        queryParams.get('checkInDate'), '%Y-%m-%d').date()
-    checkOutDate = datetime.strptime(
-        queryParams.get('checkOutDate'),  '%Y-%m-%d').date()
-    if (checkInDate == None) or (checkOutDate == None):
+    try:
+        numberOfPeople = int(queryParams.get('numberOfPeople'))
+        checkInDate = datetime.strptime(
+            queryParams.get('checkInDate'), '%Y-%m-%d').date()
+        checkOutDate = datetime.strptime(
+            queryParams.get('checkOutDate'),  '%Y-%m-%d').date()
+    except:
         return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Query Args')
 
-    hotelRooms = Room.objects.filter(hotelId=hotelId)
-    hotelBookings = RoomBooking.objects.filter(roomId__in=hotelRooms)
+    hotelRooms = Room.objects.filter(
+        hotelId=hotelId, numberOfPeople__gte=numberOfPeople)
+
+    hotelRoomIds = [room.pk for room in hotelRooms]
+    hotelBookings = RoomBooking.objects.filter(
+        roomId__in=hotelRoomIds)
     excludedRooms = []
     for booking in hotelBookings:
-        print(booking.checkInDate)
-        print(booking.checkoutDate)
         if (excludedRooms.__contains__(booking.roomId)):
             continue
         if (checkInDate <= booking.checkInDate) and (checkOutDate >= booking.checkoutDate):
@@ -88,7 +92,7 @@ def getAvailableRooms(request, hotelId):
             print('excluded on 2')
             excludedRooms.append(booking.roomId)
             continue
-
+    numberOfNights = (checkOutDate - checkInDate).days + 1
     availableRooms = Room.objects.exclude(
-        pk__in=[room.pk for room in excludedRooms])
-    return Response(status=status.HTTP_200_OK, data=AddRoomSerializer(availableRooms, many=True).data)
+        Q(pk__in=[room.pk for room in excludedRooms]) | Q(numberOfPeople__lt=numberOfPeople))
+    return Response(status=status.HTTP_200_OK, data=ReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
