@@ -148,8 +148,8 @@ class RoomBooking(models.Model):
         Room, on_delete=models.CASCADE, related_name="roomBooking", default=None)
 
     price = models.FloatField(max_length=20, default="")
-    checkInDate = models.DateField(default=datetime.date.today)
-    checkoutDate = models.DateField(default=datetime.date.today)
+    checkInDate = models.DateField()
+    checkoutDate = models.DateField()
 
 
 class FarmBooking(models.Model):

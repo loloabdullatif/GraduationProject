@@ -41,8 +41,8 @@ def getAvailableRooms(request, hotelId):
         numberOfPeople = int(queryParams.get('numberOfPeople'))
         checkInDate = datetime.strptime(
             queryParams.get('checkInDate'), '%Y-%m-%d').date()
-        checkOutDate = datetime.strptime(
-            queryParams.get('checkOutDate'),  '%Y-%m-%d').date()
+        checkoutDate = datetime.strptime(
+            queryParams.get('checkoutDate'),  '%Y-%m-%d').date()
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Query Args')
 
@@ -56,40 +56,40 @@ def getAvailableRooms(request, hotelId):
     for booking in hotelBookings:
         if (excludedRooms.__contains__(booking.roomId)):
             continue
-        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkOutDate=checkOutDate)):
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkoutDate=checkoutDate)):
             excludedRooms.append(booking.roomId)
 
-    numberOfNights = (checkOutDate - checkInDate).days + 1
+    numberOfNights = (checkoutDate - checkInDate).days + 1
     availableRooms = Room.objects.exclude(
         Q(pk__in=[room.pk for room in excludedRooms]) | Q(numberOfPeople__lt=numberOfPeople))
     return Response(status=status.HTTP_200_OK, data=ReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
 
 
-def checkRoomAvailability(room, checkInDate, checkOutDate):
+def checkRoomAvailability(room, checkInDate, checkoutDate):
     roomBookings = RoomBooking.objects.filter(roomId=room.id)
-    if (checkBookingListOverlappingAgainstRange(bookings=roomBookings, checkInDate=checkInDate, checkOutDate=checkOutDate)):
+    if (checkBookingListOverlappingAgainstRange(bookings=roomBookings, checkInDate=checkInDate, checkoutDate=checkoutDate)):
         return False
     return True
 
 
-def checkBookingListOverlappingAgainstRange(bookings, checkInDate, checkOutDate):
+def checkBookingListOverlappingAgainstRange(bookings, checkInDate, checkoutDate):
     for booking in bookings:
-        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkOutDate=checkOutDate)):
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkoutDate=checkoutDate)):
             return True
     return False
 
 
-def checkBookingOverlappingAgainstRange(booking, checkInDate, checkOutDate):
-    if (checkInDate <= booking.checkInDate) and (checkOutDate >= booking.checkoutDate):
+def checkBookingOverlappingAgainstRange(booking, checkInDate, checkoutDate):
+    if (checkInDate <= booking.checkInDate) and (checkoutDate >= booking.checkoutDate):
         print('excluded on outer')
         return True
-    if (checkInDate >= booking.checkInDate) and (checkOutDate <= booking.checkoutDate):
+    if (checkInDate >= booking.checkInDate) and (checkoutDate <= booking.checkoutDate):
         print('excluded on inner')
         return True
-    if (checkOutDate >= booking.checkInDate) and (checkInDate <= booking.checkoutDate):
+    if (checkoutDate >= booking.checkInDate) and (checkInDate <= booking.checkoutDate):
         print('excluded on 1')
         return True
-    if checkInDate <= booking.checkoutDate and checkOutDate >= booking.checkoutDate:
+    if checkInDate <= booking.checkoutDate and checkoutDate >= booking.checkoutDate:
         print('excluded on 2')
         return True
     return False
@@ -105,8 +105,8 @@ def bookRoom(request):
             raise ValueError()
         checkInDate = datetime.strptime(
             data.get('checkInDate'), '%Y-%m-%d').date()
-        checkOutDate = datetime.strptime(
-            data.get('checkOutDate'),  '%Y-%m-%d').date()
+        checkoutDate = datetime.strptime(
+            data.get('checkoutDate'),  '%Y-%m-%d').date()
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Body Args')
 
@@ -120,11 +120,11 @@ def bookRoom(request):
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data='User does not exist')
-    if (checkRoomAvailability(room=room, checkInDate=checkInDate, checkOutDate=checkOutDate) == False):
+    if (checkRoomAvailability(room=room, checkInDate=checkInDate, checkoutDate=checkoutDate) == False):
         return Response(status=status.HTTP_400_BAD_REQUEST,
                         data='Room has been reserved by someone else, try another room')
 
-    price = int(((checkOutDate-checkInDate).days + 1)*room.price)
+    price = int(((checkoutDate-checkInDate).days + 1)*room.price)
     bookingDetails = dict(ChainMap({"price": price}, data))
     roomBookingSerializer = AddRoomBookingSerializer(data=bookingDetails)
     if roomBookingSerializer.is_valid():
