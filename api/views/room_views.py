@@ -60,7 +60,7 @@ def getAvailableRooms(request, hotelId):
             excludedRooms.append(booking.roomId)
 
     numberOfNights = (checkoutDate - checkInDate).days + 1
-    availableRooms = Room.objects.exclude(
+    availableRooms = Room.objects.filter(hotelId=hotelId).exclude(
         Q(pk__in=[room.pk for room in excludedRooms]) | Q(numberOfPeople__lt=numberOfPeople))
     return Response(status=status.HTTP_200_OK, data=ReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
 
