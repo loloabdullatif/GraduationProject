@@ -1,5 +1,5 @@
 from django.urls import path
-from api.views import room_views
+from api.views import room_views, user_views
 import api.views.auth_views as auth_views
 import api.views.hotel_views as hotel_views
 import api.views.restaurant_views as restaurant_views
@@ -16,6 +16,7 @@ urlpatterns = [
     path('updateData/<int:id>/', auth_views.updateData),
     path('users/getById', auth_views.getById),
     path('createAccount/', auth_views.createAccount),
+    path('reservations/', user_views.getMyReservations),
     # Public Places
     path('myProperties/', auth_views.getMyProperties),
     # Hotels

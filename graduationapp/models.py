@@ -108,6 +108,8 @@ class Table(models.Model):
 
 
 class TableBooking(models.Model):
+    userId = models.ForeignKey(
+        TouristaUser, on_delete=models.CASCADE, default=None)
     price = models.FloatField(max_length=20, default="")
     checkInTime = models.DateTimeField(null=True, blank=True)
     checkoutTime = models.DateTimeField(null=True, blank=True)

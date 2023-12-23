@@ -394,3 +394,18 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = "__all__"
+
+
+class ReservationRoomSerializer(serializers.ModelSerializer):
+    hotel = serializers.SerializerMethodField(read_only=True)
+    room = serializers.SerializerMethodField(read_only=True)
+
+    def get_hotel(request, booking):
+        return HotelResponseSerializer(booking.roomId.hotelId).data
+
+    def get_room(request, booking):
+        return RoomSerializer(booking.roomId).data
+
+    class Meta:
+        model = RoomBooking
+        fields = "__all__"
