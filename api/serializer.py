@@ -156,7 +156,7 @@ class AddRoomBookingSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ReservationRoomSerializer(serializers.ModelSerializer):
+class AvailableReservationRoomSerializer(serializers.ModelSerializer):
     totalPrice = serializers.SerializerMethodField(read_only=True)
 
     def get_totalPrice(self, room):

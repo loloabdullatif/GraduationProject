@@ -2,7 +2,7 @@ from collections import ChainMap
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from api.serializer import AddRoomBookingSerializer, AddRoomSerializer, ReservationRoomSerializer, RoomSerializer
+from api.serializer import AddRoomBookingSerializer, AddRoomSerializer, AvailableReservationRoomSerializer, RoomSerializer
 from django.db.models import Q
 from datetime import datetime
 
@@ -62,7 +62,7 @@ def getAvailableRooms(request, hotelId):
     numberOfNights = (checkoutDate - checkInDate).days + 1
     availableRooms = Room.objects.filter(hotelId=hotelId).exclude(
         Q(pk__in=[room.pk for room in excludedRooms]) | Q(numberOfPeople__lt=numberOfPeople))
-    return Response(status=status.HTTP_200_OK, data=ReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
+    return Response(status=status.HTTP_200_OK, data=AvailableReservationRoomSerializer(availableRooms, context={'numberOfNights': numberOfNights}, many=True).data)
 
 
 def checkRoomAvailability(room, checkInDate, checkoutDate):
