@@ -32,6 +32,7 @@ urlpatterns = [
     path('farms/new/', farm_views.addFarm),
     path("allFarms/", farm_views.allFarms),
     path("farmsSearch/", farm_views.FarmSearch.as_view()),
+    path("farms/<int:farmId>/bookFarm/", farm_views.bookFarm),
 
     # Restaurants
     path('restaurants/new/', restaurant_views.addRestaurant),

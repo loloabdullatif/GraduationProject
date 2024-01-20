@@ -96,3 +96,24 @@ class FarmSearch(generics.ListAPIView):
     ordering_fields = ['rating']
     filterset_fields = ['streetId']
     search_fields = ['name']
+
+
+@api_view(["POST"])
+def bookFarm(request, farmId):
+    try:
+        farm = Farm.objects.get(id=farmId)
+    except Farm.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="Farm doesn't exist")
+
+    if (farm.rentType == 'monthly'):
+        return bookFarmMonthly(request=request, farm=farm)
+
+    return bookFarmDaily(request=request, farm=farm)
+
+
+def bookFarmMonthly(request, farm):
+    return Response(status=status.HTTP_200_OK, data=True)
+
+
+def bookFarmDaily(request, farm):
+    return Response(status=status.HTTP_200_OK, data=False)
