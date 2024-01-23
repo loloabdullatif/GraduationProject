@@ -26,6 +26,7 @@ urlpatterns = [
     path("hotelsSearch/", hotel_views.HotelSearch.as_view()),
     path("hotels/<int:hotelId>/availableRooms/", room_views.getAvailableRooms),
     path("bookRoom/", room_views.bookRoom),
+    path('deleteBooking/<int:bookingId>/', room_views.deleteBooking, name='deleteBooking'),
     # path("hotelRooms/", room_views.hotelRooms),
 
     # Farms

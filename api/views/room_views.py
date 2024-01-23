@@ -132,3 +132,14 @@ def bookRoom(request):
         return Response(status=status.HTTP_201_CREATED, data='Booking Successful')
 
     return Response(roomBookingSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['DELETE'])
+def deleteBooking(request, bookingId):
+    try:
+        booking = RoomBooking.objects.get(id=bookingId)
+        booking.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except RoomBooking.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
