@@ -119,6 +119,7 @@ class Farm(PublicPlace):
     os_choice = (('daily', 'Daily'),
                  ('monthly', 'Monthly'))
     rentType = models.CharField(max_length=30, choices=os_choice)
+    price = models.FloatField(max_length=10, default=0.0)
 
     def __str__(self):
         return f'{ self.pk} {self.name} '
@@ -157,7 +158,7 @@ class RoomBooking(models.Model):
 class FarmBooking(models.Model):
     userId = models.ForeignKey(
         TouristaUser, on_delete=models.CASCADE, default=None)
-    farmId = models.OneToOneField(Farm, on_delete=models.CASCADE, default=None)
+    farmId = models.ForeignKey(Farm, on_delete=models.CASCADE, default=None)
 
     price = models.FloatField(max_length=20, default="")
     checkInDate = models.DateField(default=datetime.date.today)

@@ -1,5 +1,5 @@
 
-from graduationapp.models import City, Farm, Cuisine, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from graduationapp.models import City, Farm, Cuisine, FarmBooking, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
 
 
@@ -393,6 +393,12 @@ class RestaurantCuisineSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
+        fields = "__all__"
+
+
+class AddFarmBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FarmBooking
         fields = "__all__"
 
 

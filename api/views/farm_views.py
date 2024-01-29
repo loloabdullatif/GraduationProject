@@ -1,3 +1,5 @@
+from collections import ChainMap
+from datetime import datetime
 import json
 from typing import Iterable
 from rest_framework.decorators import api_view
@@ -6,8 +8,9 @@ from rest_framework import status
 from rest_framework import generics
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddFarmSerializer, AmenitySerializer, FarmDetailsSerializer, ImageSerializer, ServiceSerializer
-from graduationapp.models import Farm, Images, Service
+from api.serializer import AddFarmBookingSerializer, AddFarmSerializer, AmenitySerializer, FarmDetailsSerializer, ImageSerializer, ServiceSerializer
+from graduationapp.models import Farm, FarmBooking, Images, Service
+import calendar
 
 
 @api_view(['POST'])
@@ -112,8 +115,79 @@ def bookFarm(request, farmId):
 
 
 def bookFarmMonthly(request, farm):
-    return Response(status=status.HTTP_200_OK, data=True)
+    data = request.data
+    try:
+        userId = data.get('userId')
+        if (userId == None):
+            raise ValueError()
+        selectedMonth = int(data.get('month'))
+        selectedYear = int(data.get('year'))
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Body Args')
+
+    checkInDate = datetime(
+        year=selectedYear, month=selectedMonth, day=1).date()
+    checkoutDate = datetime(year=selectedYear, month=selectedMonth,
+                            day=calendar.monthrange(selectedYear, selectedMonth)[1]).date()
+    if (checkoutDate < datetime.now().date()):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="This month has already passed")
+
+    farmBookings = FarmBooking.objects.filter(farmId=farm.pk)
+    for booking in farmBookings:
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkoutDate=checkoutDate)):
+            return Response("Farm is not available during the given date", status=status.HTTP_204_NO_CONTENT)
+
+    subtotal = int(farm.price)
+    bookingDetails = dict(
+        ChainMap({"price": subtotal, "farmId": farm.pk, "checkInDate": checkInDate, "checkoutDate": checkoutDate}, data))
+    addFarmBookingSerializer = AddFarmBookingSerializer(data=bookingDetails)
+    if addFarmBookingSerializer.is_valid():
+        addFarmBookingSerializer.save()
+        return Response(status=status.HTTP_201_CREATED, data='Booking Successful')
+
+    return Response(addFarmBookingSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def bookFarmDaily(request, farm):
-    return Response(status=status.HTTP_200_OK, data=False)
+    data = request.data
+    try:
+        userId = data.get('userId')
+        if (userId == None):
+            raise ValueError()
+        checkInDate = datetime.strptime(
+            data.get('checkInDate'), '%Y-%m-%d').date()
+        checkoutDate = datetime.strptime(
+            data.get('checkoutDate'),  '%Y-%m-%d').date()
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Body Args')
+
+    farmBookings = FarmBooking.objects.filter(farmId=farm.pk)
+    for booking in farmBookings:
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInDate=checkInDate, checkoutDate=checkoutDate)):
+            return Response("Farm is not available during the given date", status=status.HTTP_204_NO_CONTENT)
+
+    subtotal = int(((checkoutDate-checkInDate).days + 1)*farm.price)
+    bookingDetails = dict(
+        ChainMap({"price": subtotal, "farmId": farm.pk}, data))
+    addFarmBookingSerializer = AddFarmBookingSerializer(data=bookingDetails)
+    if addFarmBookingSerializer.is_valid():
+        addFarmBookingSerializer.save()
+        return Response(status=status.HTTP_201_CREATED, data='Booking Successful')
+
+    return Response(addFarmBookingSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def checkBookingOverlappingAgainstRange(booking, checkInDate, checkoutDate):
+    if (checkInDate <= booking.checkInDate) and (checkoutDate >= booking.checkoutDate):
+        print('excluded on outer')
+        return True
+    if (checkInDate >= booking.checkInDate) and (checkoutDate <= booking.checkoutDate):
+        print('excluded on inner')
+        return True
+    if (checkoutDate >= booking.checkInDate) and (checkInDate <= booking.checkoutDate):
+        print('excluded on 1')
+        return True
+    if checkInDate <= booking.checkoutDate and checkoutDate >= booking.checkoutDate:
+        print('excluded on 2')
+        return True
+    return False
