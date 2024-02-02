@@ -417,11 +417,17 @@ class ReservationRoomSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class FarmResponseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Farm
+        fields = "__all__"
+
 class FarmReservationSerializer(serializers.ModelSerializer):
     farm = serializers.SerializerMethodField(read_only=True)
 
     def get_farm(request, booking):
-        return HotelResponseSerializer(booking.roomId.hotelId).data
+        return FarmResponseSerializer(booking.farmId).data
 
     class Meta:
         model = FarmBooking
