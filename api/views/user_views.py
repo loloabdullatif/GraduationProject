@@ -19,5 +19,6 @@ def getMyReservations(request):
     farmBookings = FarmBooking.objects.filter(userId=userId)
     tableBookings = TableBooking.objects.filter(userId=userId)
     return Response({
-        'hotels': ReservationRoomSerializer(roomBookings, many=True).data
+        'hotels': ReservationRoomSerializer(roomBookings, many=True).data,
+        'farms': ReservationRoomSerializer(farmBookings, many=True).data
     })
