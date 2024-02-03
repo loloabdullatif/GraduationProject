@@ -423,6 +423,7 @@ class FarmResponseSerializer(serializers.ModelSerializer):
         model = Farm
         fields = "__all__"
 
+
 class FarmReservationSerializer(serializers.ModelSerializer):
     farm = serializers.SerializerMethodField(read_only=True)
 
@@ -432,3 +433,18 @@ class FarmReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = FarmBooking
         fields = "__all__"
+
+
+class UserFavoritePropertySerializer(serializers.ModelSerializer):
+    object = serializers.SerializerMethodField(read_only=True)
+
+    def get_object(request, property):
+        if (property.type == 'hotel'):
+            return HotelDetailsSerializer(Hotel.objects.get(id=property.pk)).data
+        if (property.type == 'restaurant'):
+            return RestaurantDetailsSerializer(Restaurant.objects.get(id=property.pk)).data
+        return FarmDetailsSerializer(Farm.objects.get(id=property.pk)).data
+
+    class Meta:
+        model = PublicPlace
+        fields = ['type', 'id', 'object']

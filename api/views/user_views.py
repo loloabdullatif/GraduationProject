@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework import generics
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import CuisineSerializer, FarmReservationSerializer, ReservationRoomSerializer
-from graduationapp.models import Cuisine, FarmBooking, RoomBooking, TableBooking
+from api.serializer import CuisineSerializer, FarmReservationSerializer, PublicPlaceSerializer, ReservationRoomSerializer, UserFavoritePropertySerializer
+from graduationapp.models import Cuisine, FarmBooking, PublicPlace, RoomBooking, TableBooking
 
 
 @api_view(["GET"])
@@ -22,3 +22,17 @@ def getMyReservations(request):
         'hotels': ReservationRoomSerializer(roomBookings, many=True).data,
         'farms': FarmReservationSerializer(farmBookings, many=True).data
     })
+
+
+@api_view(["GET"])
+def getMyFavorites(request):
+    propertyIds = request.GET.get('propertyIds')
+    try:
+        propertyIds = list(json.loads(propertyIds))
+        if not isinstance(propertyIds, list):
+            raise ValueError()
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Invalid or No ids were provided')
+
+    properties = PublicPlace.objects.filter(id__in=propertyIds)
+    return Response(UserFavoritePropertySerializer(properties, many=True).data)

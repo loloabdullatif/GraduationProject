@@ -17,6 +17,7 @@ urlpatterns = [
     path('users/getById', auth_views.getById),
     path('createAccount/', auth_views.createAccount),
     path('reservations/', user_views.getMyReservations),
+    path('favorites/', user_views.getMyFavorites),
     # Public Places
     path('myProperties/', auth_views.getMyProperties),
     # Hotels
@@ -26,7 +27,8 @@ urlpatterns = [
     path("hotelsSearch/", hotel_views.HotelSearch.as_view()),
     path("hotels/<int:hotelId>/availableRooms/", room_views.getAvailableRooms),
     path("bookRoom/", room_views.bookRoom),
-    path('deleteBooking/<int:bookingId>/', room_views.deleteBooking, name='deleteBooking'),
+    path('deleteBooking/<int:bookingId>/',
+         room_views.deleteBooking, name='deleteBooking'),
     # path("hotelRooms/", room_views.hotelRooms),
 
     # Farms
