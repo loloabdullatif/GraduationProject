@@ -1,6 +1,8 @@
 
+import datetime
 from graduationapp.models import City, Farm, Cuisine, FarmBooking, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
+from django.utils import timezone
 
 
 class AddUserSerializer(serializers.ModelSerializer):
@@ -187,6 +189,13 @@ class AddTableSerializer(serializers.ModelSerializer):
 class RestaurantDetailsSerializer(serializers.ModelSerializer):
     details = serializers.SerializerMethodField(read_only=True)
     cuisines = serializers.SerializerMethodField(read_only=True)
+    isOpen = serializers.SerializerMethodField(read_only=True)
+
+    def get_isOpen(self, restaurant):
+        now = timezone.now().time()
+        if (now > restaurant.openTime):
+            return True
+        return False
 
     def get_details(self, restaurant):
         request = self.context.get('request')
@@ -213,6 +222,7 @@ class RestaurantDetailsSerializer(serializers.ModelSerializer):
             'amenities': amenities,
             'images': images,
             'cuisines': data.pop('cuisines'),
+            'isOpen': data.pop('isOpen'),
             'restaurant': data
         }
 

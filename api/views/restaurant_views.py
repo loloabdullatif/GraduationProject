@@ -47,7 +47,7 @@ def addRestaurant(request):
                     serviceSerializer.save()
                 else:
                     return Response(serviceSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
+
         if isinstance(cuisines, Iterable):
             for cuisineId in cuisines:
                 restaurantCuisineSerializer = RestaurantCuisineSerializer(data={
@@ -100,39 +100,17 @@ def addTable(request):
 @api_view(["GET"])
 def allRestaurants(request):
     restaurants = Restaurant.objects.all()[:10]
-    restaurantsReturnObject = []
-    for restaurant in restaurants:
-        restaurantServices = Service.objects.filter(publicPlaceId=restaurant.id)
-        restaurantAmenities = []
-        for restaurantService in restaurantServices:
-            restaurantAmenities.append(restaurantService.amenityId)
-        serializedAmenities = AmenitySerializer(restaurantAmenities, many=True).data
-        images = Images.objects.filter(publicPlaceId=restaurant.id)
-        serializerImages = ImageSerializer(
-            images,
-            many=True,
-            context={"request": request},
-        ).data
-        restaurantsReturnObject.append(
-            {
-                "restaurant": RestaurantDetailsSerializer(restaurant).data,
-                "amenities": serializedAmenities,
-                "images": serializerImages,
-            }
-        )
-        return Response(status=status.HTTP_200_OK, data=restaurantsReturnObject)
-
     return Response(
         status=status.HTTP_200_OK,
-        data=RestaurantDetailsSerializer(restaurants, many=True).data,
+        data=RestaurantDetailsSerializer(restaurants, many=True, context={
+                                         "request": request},).data,
     )
-
 
 
 @api_view(["GET"])
 def restaurantTables(request):
-    restaurantId=request.GET.get("restaurantId")
-    if(restaurantId==None):
+    restaurantId = request.GET.get("restaurantId")
+    if (restaurantId == None):
         return Response(
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -141,8 +119,8 @@ def restaurantTables(request):
         status=status.HTTP_200_OK,
         data=TableSerializer(tables, many=True).data,
     )
-    
-    
+
+
 class RestaurantSearch(generics.ListAPIView):
     serializer_class = RestaurantDetailsSerializer
     queryset = Restaurant.objects.all()
