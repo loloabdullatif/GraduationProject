@@ -439,11 +439,12 @@ class UserFavoritePropertySerializer(serializers.ModelSerializer):
     object = serializers.SerializerMethodField(read_only=True)
 
     def get_object(request, property):
+        requestContext = request.context.get('request')
         if (property.type == 'hotel'):
-            return HotelDetailsSerializer(Hotel.objects.get(id=property.pk)).data
+            return HotelDetailsSerializer(Hotel.objects.get(id=property.pk), context={'request': requestContext},).data
         if (property.type == 'restaurant'):
-            return RestaurantDetailsSerializer(Restaurant.objects.get(id=property.pk)).data
-        return FarmDetailsSerializer(Farm.objects.get(id=property.pk)).data
+            return RestaurantDetailsSerializer(Restaurant.objects.get(id=property.pk), context={'request': requestContext},).data
+        return FarmDetailsSerializer(Farm.objects.get(id=property.pk), context={'request': requestContext},).data
 
     class Meta:
         model = PublicPlace

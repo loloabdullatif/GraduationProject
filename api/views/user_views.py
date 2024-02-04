@@ -35,4 +35,4 @@ def getMyFavorites(request):
         return Response(status=status.HTTP_400_BAD_REQUEST, data='Invalid or No ids were provided')
 
     properties = PublicPlace.objects.filter(id__in=propertyIds)
-    return Response(UserFavoritePropertySerializer(properties, many=True).data)
+    return Response(UserFavoritePropertySerializer(properties, many=True, context={'request': request},).data)
