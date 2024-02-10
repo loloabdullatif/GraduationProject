@@ -29,7 +29,7 @@ urlpatterns = [
     path("bookRoom/", room_views.bookRoom),
     path('deleteBooking/<int:bookingId>/',
          room_views.deleteBooking, name='deleteBooking'),
-    # path("hotelRooms/", room_views.hotelRooms),
+    path("hotelRooms/", room_views.hotelRooms),
 
     # Farms
     path('farms/new/', farm_views.addFarm),
