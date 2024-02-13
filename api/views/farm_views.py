@@ -65,7 +65,8 @@ def allFarms(request):
     farms = Farm.objects.all()[:10]
     return Response(
         status=status.HTTP_200_OK,
-        data=FarmDetailsSerializer(farms, many=True).data,
+        data=FarmDetailsSerializer(farms, many=True, context={
+                                   'request': request}).data,
     )
 
 
