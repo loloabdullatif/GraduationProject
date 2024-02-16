@@ -21,7 +21,7 @@ def hotels(request):
 
 
 def getHotels(request):
-    hotels = Hotel.objects.all()
+    hotels = Hotel.objects.filter(isApproved=True)[:8]
     return Response(HotelDetailsSerializer(hotels, context={'request': request}, many=True).data, status=status.HTTP_200_OK)
 
 
@@ -46,7 +46,7 @@ class AddHotelAPIView(APIView):
 
 class HotelSearch(generics.ListAPIView):
     serializer_class = HotelDetailsSerializer
-    queryset = Hotel.objects.all()
+    queryset = Hotel.objects.filter(isApproved=True)
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating', 'numberOfStars']

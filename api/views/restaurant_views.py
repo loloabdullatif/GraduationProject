@@ -99,7 +99,7 @@ def addTable(request):
 
 @api_view(["GET"])
 def allRestaurants(request):
-    restaurants = Restaurant.objects.all()[:10]
+    restaurants = Restaurant.objects.filter(isApproved=True)[:8]
     return Response(
         status=status.HTTP_200_OK,
         data=RestaurantDetailsSerializer(restaurants, many=True, context={
@@ -123,7 +123,7 @@ def restaurantTables(request):
 
 class RestaurantSearch(generics.ListAPIView):
     serializer_class = RestaurantDetailsSerializer
-    queryset = Restaurant.objects.all()
+    queryset = Restaurant.objects.filter(isApproved=True)
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating']

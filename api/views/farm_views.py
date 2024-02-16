@@ -62,7 +62,7 @@ def addFarm(request):
 
 @api_view(["GET"])
 def allFarms(request):
-    farms = Farm.objects.all()[:10]
+    farms = Farm.objects.filter(isApproved=True)[:8]
     return Response(
         status=status.HTTP_200_OK,
         data=FarmDetailsSerializer(farms, many=True, context={
@@ -72,7 +72,7 @@ def allFarms(request):
 
 class FarmSearch(generics.ListAPIView):
     serializer_class = FarmDetailsSerializer
-    queryset = Farm.objects.all()
+    queryset = Farm.objects.filter(isApproved=True)
     filter_backends = [filters.OrderingFilter,
                        filters.SearchFilter, DjangoFilterBackend]
     ordering_fields = ['rating']
