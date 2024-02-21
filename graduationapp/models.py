@@ -151,7 +151,6 @@ class RoomBooking(models.Model):
     roomId = models.ForeignKey(
         Room, on_delete=models.CASCADE, related_name="roomBooking", default=None)
 
-    price = models.FloatField(max_length=20, default="")
     checkInDate = models.DateField()
     checkoutDate = models.DateField()
 
@@ -161,7 +160,6 @@ class FarmBooking(models.Model):
         TouristaUser, on_delete=models.CASCADE, default=None)
     farmId = models.ForeignKey(Farm, on_delete=models.CASCADE, default=None)
 
-    price = models.FloatField(max_length=20, default="")
     checkInDate = models.DateField(default=datetime.date.today)
     # date=models.TimeField(null=True)
     checkoutDate = models.DateField(default=datetime.date.today)

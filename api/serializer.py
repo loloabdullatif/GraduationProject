@@ -434,9 +434,13 @@ class AddFarmBookingSerializer(serializers.ModelSerializer):
 class ReservationRoomSerializer(serializers.ModelSerializer):
     hotel = serializers.SerializerMethodField(read_only=True)
     room = serializers.SerializerMethodField(read_only=True)
+    price = serializers.SerializerMethodField(read_only=True)
 
     def get_hotel(request, booking):
         return HotelResponseSerializer(booking.roomId.hotelId).data
+
+    def get_price(request, booking):
+        return int(((booking.checkoutDate-booking.checkInDate).days + 1)*booking.roomId.price)
 
     def get_room(request, booking):
         return RoomSerializer(booking.roomId).data
@@ -455,9 +459,15 @@ class FarmResponseSerializer(serializers.ModelSerializer):
 
 class FarmReservationSerializer(serializers.ModelSerializer):
     farm = serializers.SerializerMethodField(read_only=True)
+    price = serializers.SerializerMethodField(read_only=True)
 
     def get_farm(request, booking):
         return FarmResponseSerializer(booking.farmId).data
+
+    def get_price(request, booking):
+        if (booking.farmId.rentType == 'monthly'):
+            return booking.farmId.price
+        return int(((booking.checkoutDate-booking.checkInDate).days + 1)*booking.farmId.price)
 
     class Meta:
         model = FarmBooking
