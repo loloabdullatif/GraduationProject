@@ -1,4 +1,5 @@
 
+from collections import ChainMap
 import datetime
 from graduationapp.models import City, Farm, Cuisine, FarmBooking, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
@@ -79,6 +80,12 @@ class GovernorateSerializer(serializers.ModelSerializer):
         model = Governate
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return dict(ChainMap({
+            'name': data.pop('governateName'),
+        }, data))
+
 
 class AddRestaurantSerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,11 +104,23 @@ class CitySerializer(serializers.ModelSerializer):
         model = City
         fields = '__all__'
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return dict(ChainMap({
+            'name': data.pop('cityName'),
+        }, data))
+
 
 class StreetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Street
         fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return dict(ChainMap({
+            'name': data.pop('streetName'),
+        }, data))
 
 
 class PublicPlaceSerializer(serializers.ModelSerializer):

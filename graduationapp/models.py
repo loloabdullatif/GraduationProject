@@ -23,27 +23,27 @@ class TouristaUser(AbstractUser):
 
 
 class Governate(models.Model):
-    name = models.CharField(default='', max_length=30)
+    governateName = models.CharField(default='', max_length=30)
 
     def __str__(self):
-        return self.name
+        return self.governateName
 
 
 class City(models.Model):
     governateId = models.ForeignKey(
         Governate, on_delete=models.CASCADE, default=None)
-    name = models.CharField(default='', max_length=30)
+    cityName = models.CharField(default='', max_length=30)
 
     def __str__(self):
-        return self.name
+        return self.cityName
 
 
 class Street(models.Model):
     cityId = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    name = models.CharField(default='', max_length=30)
+    streetName = models.CharField(default='', max_length=30)
 
     def __str__(self):
-        return self.name
+        return self.streetName
 
 
 class PublicPlace(models.Model):
