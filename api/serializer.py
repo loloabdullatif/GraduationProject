@@ -466,7 +466,7 @@ class FarmReservationSerializer(serializers.ModelSerializer):
 
     def get_price(request, booking):
         if (booking.farmId.rentType == 'monthly'):
-            return booking.farmId.price
+            return int(booking.farmId.price)
         return int(((booking.checkoutDate-booking.checkInDate).days + 1)*booking.farmId.price)
 
     class Meta:
