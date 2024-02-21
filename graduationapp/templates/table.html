@@ -1,0 +1,61 @@
+
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid page-header mb-5 p-0" style="background-image:  url(/static/img/alf.jpg);">
+    <div class="container-fluid page-header-inner py-5">
+        <div class="container text-center pb-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Table</h1>
+            
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- table Start -->
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Tables</h6>
+            <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Tables</span></h1>
+        </div>
+       
+            </div>
+            <div class="row g-4">
+                {% for key, value in data.items %}
+<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
+    <div class="room-item shadow rounded overflow-hidden">
+        <div class="position-relative">
+            <img class="img-fluid" src="{% static 'img/table.jpg'%}" alt="">
+            <small class="position-absolute top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">table</small>
+        </div>
+        <div class="p-4 mt-2">
+           
+            <div class="d-flex mb-3">
+                <small class="border-end me-3 pe-3"><i class="fa fa-hashtag text-primary me-2"></i>{{value.tableNumber}}</small>
+              <small class="border-end me-3 pe-3"><i class="fa fa-user text-primary me-2"></i>{{value.capacity}}</small>
+                <small><i class="fa fa-coffee text-primary me-2"></i>{{value.tableType}}</small>
+            </div>
+            <p class="text-body mb-3">This Table in {{ value.table_id }} .</p>
+            <div class="d-flex justify-content-between"> 
+                <a href="/book-table?table_id={{value.table_id}}"><button class="btn btn-sm btn-dark rounded py-2 px-4">Book Now</button></a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endfor %} 
+<div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 border rounded p-1">
+            <div class="border rounded text-center p-1">
+                <div class="bg-white rounded text-center p-5">
+                    <h4 class="mb-4">All <span class="text-primary text-uppercase">Table </span></h4>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

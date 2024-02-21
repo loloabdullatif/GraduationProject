@@ -1,0 +1,130 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+
+
+
+<h2>Your hotel:</h2>
+
+<table class="table table-striped  ">
+    <thead>
+        <th>name</th>
+       
+        <th colspan="3">Actions</th>
+        
+    </thead>
+    {% for hotel in hotels %}
+    <tr>
+        <td>{{hotel.name}}</td>
+       
+        <td colspan="3">
+            <a href="/deletepublicplace/{{hotel.id}} "><Button class="btn btn-danger">Delete Place</Button></a>
+           
+            <a href="/allroombookings/{{ hotel.id }}"><Button class="btn btn-primary">all booking</Button></a>
+            <a href="/dashbord/{{ hotel.id }}"><Button class="btn btn-primary">rooms</Button></a>
+
+        </td>
+    
+
+        {% empty %}
+        <li>No restaurants added yet.</li>
+    </tr>
+    {% endfor %} 
+
+
+</table> 
+
+
+
+
+<h2>Your farm:</h2>
+<table class="table table-striped  ">
+    <thead>
+        <th>name</th>
+       
+        <th colspan="2">Actions</th>
+        
+    </thead>
+    {% for farm in farms %}
+    <tr>
+        <td>{{farm.name}}</td>
+       
+        <td colspan="2">
+            <a href="/deletepublicplace/{{farm.id}} "><Button class="btn btn-danger">Delete Place</Button></a>
+           
+            <a href="/allbookings/{{ farm.id }}"><Button class="btn btn-primary">all booking</Button></a>
+            
+
+        </td>
+    
+
+        {% empty %}
+        <li>No farm added yet.</li>
+    </tr>
+    {% endfor %} 
+
+
+</table> 
+
+
+<h2>Your restaurant:</h2>
+<table class="table table-striped  ">
+    <thead>
+        <th>name</th>
+       
+        <th colspan="3">Actions</th>
+        
+    </thead>
+    {% for restaurant in restaurants %}
+    <tr>
+        <td>{{restaurant.name}}</td>
+       
+        <td colspan="2">
+            <a href="/deletepublicplace/{{restaurant.id}} "><Button class="btn btn-danger">Delete Place</Button></a>
+            <a href="/alltablebookings/{{ restaurant.id }}"><Button class="btn btn-primary">all booking</Button></a>
+            <a href="/dashbord_Table/{{ restaurant.id }}"><Button class="btn btn-primary">Tables</Button></a>
+        </td>
+    
+
+        {% empty %}
+        <li>No restaurant added yet.</li>
+    </tr>
+    {% endfor %} 
+
+
+</table> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+<div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 border rounded p-1">
+            <div class="border rounded text-center p-1">
+                <div class="bg-white rounded text-center p-5">
+                    <h4 class="mb-4">your<span class="text-primary text-uppercase"> Place</span></h4>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                      
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

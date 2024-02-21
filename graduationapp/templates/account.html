@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+<div class="row g-3 pb-4">
+
+      <div class="col-sm-4 wow fadeIn" data-wow-delay="0.1s">
+        <div class="border rounded p-1">
+          <div class="border rounded text-center p-4">
+            <a href="/mybooking" class="icon-link">
+              <i class="fas fa-calendar-alt fa-2x text-primary mb-2" style="font-size: 100px;"></i>
+              <p class="mb-0">My booking</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4 wow fadeIn" data-wow-delay="0.3s">
+        <div class="border rounded p-1">
+          <div class="border rounded text-center p-4">
+            <a href="/yourplace" class="icon-link">
+              <i class="fa fa-hotel fa-2x text-primary mb-2" style="font-size: 100px;"></i>
+              <p class="mb-0">Place</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="col-sm-4 wow fadeIn" data-wow-delay="0.3s">
+        <div class="border rounded p-1">
+          <div class="border rounded text-center p-4">
+            <a href="/updateinfo" class="icon-link">
+              <i class="fas fa-user"style="font-size: 100px;"></i>
+              <p class="mb-0">Update information</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+    <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 border rounded p-1">
+                <div class="border rounded text-center p-1">
+                    <div class="bg-white rounded text-center p-5">
+                        <h4 class="mb-4">Your <span class="text-primary text-uppercase">Accont</span></h4>
+                        <div class="position-relative mx-auto" style="max-width: 400px;">
+                          
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

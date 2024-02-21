@@ -1,0 +1,223 @@
+{% extends "index.html" %}
+{% block content %}
+{% block css %}
+<style>
+    .progress {
+        width: 150px;
+        height: 150px;
+        background: none;
+        position: relative;
+    }
+    
+    .progress::after {
+        content: "";
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 6px solid #eee;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    
+    .progress>span {
+        width: 50%;
+        height: 100%;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+    }
+    
+    .progress .progress-left {
+        left: 0;
+    }
+    
+    .progress .progress-bar {
+        width: 100%;
+        height: 100%;
+        background: none;
+        border-width: 6px;
+        border-style: solid;
+        position: absolute;
+        top: 0;
+    }
+    
+    .progress .progress-left .progress-bar {
+        left: 100%;
+        border-top-right-radius: 80px;
+        border-bottom-right-radius: 80px;
+        border-left: 0;
+        -webkit-transform-origin: center left;
+        transform-origin: center left;
+    }
+    
+    .progress .progress-right {
+        right: 0;
+    }
+    
+    .progress .progress-right .progress-bar {
+        left: -100%;
+        border-top-left-radius: 80px;
+        border-bottom-left-radius: 80px;
+        border-right: 0;
+        -webkit-transform-origin: center right;
+        transform-origin: center right;
+    }
+    
+    .progress .progress-value {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+    
+    .rounded-lg {
+        border-radius: 1rem;
+    }
+    
+    .text-gray {
+        color: #aaa;
+    }
+    
+    div.h4 {
+        line-height: 1rem;
+    }
+</style>
+{% endblock css %} {% block body %}
+<!--Staff section -->
+
+<!--Room Stats section starts here-->
+
+
+<section class="my-5 ">
+    {%load app_tags%}
+    <h2 class="text-center text-primary">Table Status</h2>
+    <div class="container-fluid px-5 py-5 border">
+        <div class="row">
+
+
+
+            <div class="col-xl-3 col-lg-6 col-sm-12 mb-4 ">
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h6 font-weight-bold text-center mb-4">Total Table</h2>
+
+                    <!-- Progress bar 1 -->
+
+                    <div class="progress mx-auto" data-value={{ total_tables|percentage:total_tables}}>
+                        <span class="progress-left">
+                                    <span class="progress-bar border-primary"></span>
+                        </span>
+                        <span class="progress-right">
+                                    <span class="progress-bar border-primary"></span>
+                        </span>
+                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">{{ total_tables}}</div>
+                        </div>
+                    </div>
+                    <!-- END -->
+
+
+                </div>
+            </div>
+
+     
+
+         
+
+            <div class="col-xl-3 col-lg-6 col-sm-12 mb-4">
+                <div class="bg-white rounded-lg p-5 shadow">
+                    <h2 class="h6 font-weight-bold text-center mb-4">Total table Bookings</h2>
+
+                    <!-- Progress bar 4 -->
+                    <div class="progress mx-auto" data-value={{reserved |percentage:total_tables}}>
+                        <span class="progress-left">
+                                    <span class="progress-bar border-warning"></span>
+                        </span>
+                        <span class="progress-right">
+                                    <span class="progress-bar border-warning"></span>
+                        </span>
+                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                            <div class="h2 font-weight-bold">{{reserved}}</div>
+                        </div>
+                    </div>
+                    <!-- END -->
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Room Stats section ends here-->
+
+
+
+
+
+
+<table class="table table-striped  ">
+    <thead>
+        <th>table Number</th>
+        <th>capacity</th>
+        <th>tableType</th>
+        <th>restaurantname</th>
+        <th colspan="2">Actions</th>
+
+    </thead>
+    {% if tables %} {% for each_tables in tables %}
+    <tr>
+        <td>{{each_tables.tableNumber}}</td>
+        <td>{{each_tables.capacity}}</td>
+        <td>{{each_tables.tableType}}</td>
+        <td>{{each_tables.restaurantId.name}}</td>
+        <td colspan="2">
+            <a href="/dashbordTable/delete_table/{{each_tables.id}}"><Button class="btn btn-danger">Delete</Button></a>
+            
+        </td>
+
+
+    </tr>
+    {% endfor %} {% endif %}
+
+
+</table>
+
+
+
+<script>
+    {% if messages %}
+    swal({
+        text: "{% for message in messages %}{{ message }}\n{% endfor %}",
+     
+        buttons: false,
+        timer: 3000
+    });
+    {% endif %}
+ 
+
+</script>
+
+
+
+
+{% endblock body %} 
+
+<div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+  <div class="row justify-content-center">
+      <div class="col-lg-10 border rounded p-1">
+          <div class="border rounded text-center p-1">
+              <div class="bg-white rounded text-center p-5">
+                  <span class="text-primary text-uppercase"><h2 class="text-center pb-2">Tables Details</h2></span>
+                   
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

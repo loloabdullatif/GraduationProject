@@ -1,0 +1,116 @@
+
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+
+    <div class="container">
+        <div class="owl-carousel testimonial-carousel py-5">
+            {% for image in images %}
+            <img src="{{ image.path.url }}" style="width: 450px; height: 300px;" alt="Image">
+
+       
+            {% endfor %}
+        </div>
+    </div>
+
+<div class="owl-carousel testimonial-carousel py-5">
+    {% for amenitie in amenities %}
+    <h2 class="mb-4">Farm amenities :<span class="text-primary text-uppercase">{{ amenitie.amenityId.name }}</span></h2></H1>
+    
+
+    {% endfor %}
+</div>
+<h1 class="section-title text-start text-primary text-uppercase">About Restaurant</h1>
+<table class="table table-striped  ">
+ 
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-hotel text-primary me-2"></i>Restaurant name</h4></td>
+              <td><h4 ><span class="text-primary text-uppercase">{{ public_place.name }}</span></h4></td>
+            </tr>
+           
+            <tr>
+                <td><h4 class="mb-4"><i class="fas fa-clock text-primary me-2"></i>Open Time</h4></td>
+                <td><h4 ><span class="text-primary text-uppercase">{{ public_place.restaurant.openTime }}</span></h4></td>
+            </tr>
+        
+          
+              
+            <tr>
+              <td><h4 class="mb-4"><i class="fab fa-facebook-f text-primary me-2"></i>
+                facebookLink</h4></td>
+              <td><h4><a href="{{ public_place.facebookLink }}" target="_blank" class="text-primary text-uppercase">{{ public_place.facebookLink }}</a>
+             </h4></td>
+            </tr>
+        
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fab fa-instagram text-primary me-2"></i>
+                instagramLink</h4></td>
+              <td><h4><a href="{{ public_place.instagramLink }}" target="_blank" class="text-primary text-uppercase">{{ public_place.instagramLink }}</a>
+             </h4></td>
+            </tr>
+        
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-file-signature text-primary me-2"></i>
+                policies</h4></td>
+              <td><h4><a href="{{ public_place.policies }}" target="_blank" class="text-primary text-uppercase">{{ public_place.policies }}</a>
+             </h4></td>
+            </tr>
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-square text-primary me-2"></i>
+                area</h4></td>
+              <td><h4><a href="{{ public_place.area }}" target="_blank" class="text-primary text-uppercase">{{ public_place.area }}</a>
+             </h4></td>
+            </tr>
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-phone text-primary me-2"></i>
+                phoneNumber</h4></td>
+              <td><h4><a href="{{ public_place.phoneNumber }}" target="_blank" class="text-primary text-uppercase">{{ public_place.phoneNumber }}</a>
+             </h4></td>
+            </tr>
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-road text-primary me-2"></i>
+                Street</h4></td>
+              <td><h4><a href="{{ public_place.streetId.streetName }}" target="_blank" class="text-primary text-uppercase">{{ public_place.streetId.streetName }}</a>
+             </h4></td>
+            </tr>
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-map-marker-alt text-primary me-2"></i>
+                kilometers From City Center</h4></td>
+              <td><h4><a href="{{ public_place.kilometersFromCityCenter }}" target="_blank" class="text-primary text-uppercase">{{ public_place.kilometersFromCityCenter }}</a>
+             </h4></td>
+            </tr>
+        
+            <tr>
+              <td><h4 class="mb-4"><i class="fas fa-times text-primary me-2"></i>
+                cancellation Policy</h4></td>
+              <td><h4><a href="{{ public_place.cancellationPolicy }}" target="_blank" class="text-primary text-uppercase">{{ public_place.cancellationPolicy }}</a>
+             </h4></td>
+            </tr>
+           
+          </table>
+
+
+
+
+
+
+<div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 border rounded p-1">
+            <div class="border rounded text-center p-1">
+                <div class="bg-white rounded text-center p-5">
+                    <h4 class="mb-4">Restaurant <span class="text-primary text-uppercase">Details</span></h4>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

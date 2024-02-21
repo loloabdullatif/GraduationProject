@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+
+{% block content %}
+  <h1>All Bookings</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Check-in Date</th>
+        <th>Check-out Date</th>
+        <th>action</th>
+      
+
+      </tr>
+    </thead>
+   
+      {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.userId.username }}</td>
+          <td>{{ booking.checkInDate }}</td>
+          <td>{{ booking.checkoutDate }}</td>
+          
+         
+        <td colspan="2">
+            <a href="/delete_myroombooking/{{booking.id}} "><Button class="btn btn-danger">Delete book</Button></a>
+            
+        </td>
+         
+        {% if booking.roomId %}
+          
+       
+       {% endif %}
+    </tr>
+    {% endfor %} 
+    {% for booking in fbookings %}
+        <tr>
+          <td>{{ booking.userId.username }}</td>
+          <td>{{ booking.checkInDate }}</td>
+          <td>{{ booking.checkoutDate }}</td>
+        <td colspan="2">
+          <td colspan="2">
+            <a href="/delete_mybookingfarm/{{booking.id}} "><Button class="btn btn-danger">Delete book</Button></a>
+          
+        </td>
+        </td>
+
+    </tr>
+   
+     
+        
+      {% endfor %}
+
+
+      {% for bk in boookings %}
+      <tr>
+        <td>{{ bk.userId.username }}</td>
+          <td>{{ bk.checkInTime }}</td>
+          <td>{{ bk.checkoutTime }}</td>
+          <td>{{ bk.price }}</td>
+          <td colspan="2">
+            <td colspan="2">
+              <a href="/delete_mytablebooking/{{bk.id}} "><Button class="btn btn-danger">Delete book</Button></a>
+           
+          </td>
+          </td>
+  
+      </tr>
+    
+        {% endfor %}
+  
+  </table>
+
+  <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 border rounded p-1">
+            <div class="border rounded text-center p-1">
+                <div class="bg-white rounded text-center p-5">
+                    <h4 class="mb-4">All Bookings <span class="text-primary text-uppercase">For The PlaceS</span></h4>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

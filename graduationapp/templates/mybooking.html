@@ -1,0 +1,68 @@
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+ 
+    <h2>Your booking:</h2>
+    <table class="table table-striped  ">
+        <thead>
+            <th>name</th>
+            <th>checkInDate</th>
+            <th>checkoutDate</th>
+            <th colspan="2">Actions</th>
+            
+    
+        </thead>
+        {% for fb in farmb %}
+        <tr>
+            <td>{{fb.farmId.name}}</td>
+            <td>{{ fb.checkInDate }}</td>
+            <td>{{ fb.checkoutDate }}</td>
+            <td colspan="2">
+                <a href="/deletefarmbooking/{{fb.id}} "><Button class="btn btn-danger">Cancel</Button></a>
+            </td>
+    
+        </tr>
+        {% endfor %} 
+        {% for tb in tableb %}
+        <tr>
+            <td>{{tb.tableId.restaurantId.name}}</td>
+            <td>{{ tb.checkInTime }}</td>
+            <td>{{ tb.checkoutTime }}</td>
+            <td colspan="2">
+                <a href="/deletetablebooking/{{tb.id}} "><Button class="btn btn-danger">Cancel</Button></a>
+            </td>
+    
+        </tr>
+        {% endfor %} 
+        {% for rb in hotelb %}
+        <tr>
+            <td>{{rb.roomId.hotelId.name}}</td>
+            <td>{{rb.checkInDate }}</td>
+            <td>{{rb.checkoutDate }}</td>
+            <td colspan="2">
+                <a href="/deleteroombooking/{{rb.id}} "><Button class="btn btn-danger">Cancel</Button></a>
+            </td>
+    
+        </tr>
+        {% endfor %} 
+    
+    
+    </table> 
+
+    <!-- محتوى الصفحة الرئيسية -->
+    <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 border rounded p-1">
+                <div class="border rounded text-center p-1">
+                    <div class="bg-white rounded text-center p-5">
+                        <h4 class="mb-4">My <span class="text-primary text-uppercase">Booking</span></h4>
+                        <div class="position-relative mx-auto" style="max-width: 400px;">
+                          
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

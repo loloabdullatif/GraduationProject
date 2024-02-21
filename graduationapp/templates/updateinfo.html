@@ -1,0 +1,77 @@
+
+{% extends "index.html" %}
+{% load static %}
+{% block content %}
+{% block body %}
+
+
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Update Information</h6>
+          
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-xlg-6 col-sm-12 mx-auto">
+
+                <form action="" method="POST">
+                    {%csrf_token%}
+                    <div class="form-group">
+                        <label for="pwd">User name</label>
+                        <input  required type="text" class="form-control"  name="username" id="username" >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="old-password">Old Password</label>
+                        <input required type="password" class="form-control" name="old_password" id="old-password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input required type="password" class="form-control" name="new_password" id="new-password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input required type="password" class="form-control" name="confirm_password" id="confirm-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">phoneNumber</label>
+                        <input type="text" class="form-control " name="phoneNumber" value="{{TouristaUser.phoneNumber}}" >
+                    </div>
+                    <div class="field space">
+                      
+                        <a href="/updateinfo"><Button class="btn btn-primary">Update account</Button></a>
+               
+                    </div>
+                </form>
+               
+            </div>
+            
+        </div>
+    </div>
+{% endblock body %}
+    
+    <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 border rounded p-1">
+                <div class="border rounded text-center p-1">
+                    <div class="bg-white rounded text-center p-5">
+                        <a href="/DeleteAccount"><Button class="btn btn-danger">Delete account</Button></a>
+
+                       
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+   
+
+{% endblock %}

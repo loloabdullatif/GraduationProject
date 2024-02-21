@@ -1,0 +1,73 @@
+{% extends "index.html" %}
+{% block content %}
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/ss.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+</head>
+
+
+
+<div class="bg-img">
+    <div class="content">
+        <header>Login</header>
+        {% comment %} {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} {% endcomment %}
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="field">
+                <span class="fa fa-user"></span>
+                <input name="username" type="text" required placeholder="UserName">
+            </div>
+            <div class="field space">
+                <span class="fa fa-lock"></span>
+                <input name="password" type="password" class="pass-key" required placeholder="Password">
+                
+            </div>
+            
+            <div class="field space" >
+                <input type="submit" value="LOGIN">
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const pass_field = document.querySelector('.pass-key');
+    const showBtn = document.querySelector('.show');
+    showBtn.addEventListener('click', function () {
+        if (pass_field.type === "password") {
+            pass_field.type = "text";
+            showBtn.textContent = "HIDE";
+            showBtn.style.color = "#3498db";
+        } else {
+            pass_field.type = "password";
+            showBtn.textContent = "SHOW";
+            showBtn.style.color = "#222";
+        }
+    });
+    
+
+{% if messages %}
+    swal({
+        text: "{% for message in messages %}{{ message }}\n{% endfor %}",
+        icon: "error",
+        buttons: false,
+        timer: 3000
+    });
+    {% endif %}
+</script>
+{% endblock %}

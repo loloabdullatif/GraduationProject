@@ -1,0 +1,106 @@
+{% extends "index.html" %}
+{% block content %}
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/ss.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+    <div class="bg-img">
+      <div class="content">
+        <header>Registration </header>
+        <form  method="POST" >
+          {% csrf_token %}  
+           
+          <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text" name="first_name" required placeholder="firstname" >
+          </div>
+          <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text" name="last_name" required placeholder="lastname">
+          </div>
+
+          <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text" name="username" required placeholder="username">
+          </div>
+
+          <div class="field space">
+            <span class="fa fa-lock"></span>
+            <input type="password" class="pass-key" name="password"required placeholder="Password">
+        
+          </div>
+          <div class="field space">
+            <span class="fa fa-lock"></span>
+            <input type="password" class="pass-key" name="password2" required placeholder=" Confirm The Password">
+          
+          </div>
+          <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text" name="nationalNumber" required placeholder="nationalNumber">
+            {% if nationalNumber_exists %}
+                <p class="error">nationalNumber must be unique</p>
+            {% endif %}
+        </div>
+
+          
+         <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text"  maxlength="10" pattern="09[0-9]{8}" title="Please enter a 10-digit phone number start with 09" name="phoneNumber" required placeholder="phoneNumber">
+          </div>
+
+          <div class="field space">
+            <span class="fa fa-user"></span>
+            <input type="text"  pattern="\d{4}-\d{2}-\d{2}" title="Please enter yyyy-mm-dd" name="birthDate" required placeholder="birthDate">
+          </div>
+          
+          <div class="field space">
+            <input type="submit" value="Create">
+          </div>
+        </form>
+       
+    
+        </div>
+        
+      </div>
+    </div>
+   
+   
+    <script>
+      var csrftoken = Cookies.get('csrftoken');
+      const pass_field = document.querySelector('.pass-key');
+      const showBtn = document.querySelector('.show');
+      showBtn.addEventListener('click', function(){
+       if(pass_field.type === "password"){
+         pass_field.type = "text";
+         showBtn.textContent = "HIDE";
+         showBtn.style.color = "#3498db";
+       }else{
+         pass_field.type = "password";
+         showBtn.textContent = "SHOW";
+         showBtn.style.color = "#222";
+       }
+      });
+   
+        {% if messages %}
+        {% for message in messages %}
+        swal({
+            text: "{{ message }}",
+            buttons: false,
+            timer: 4000
+        });
+        {% endfor %}
+        {% endif %}
+
+
+
+     
+    </script>
+ 
+
+
+{% endblock %}
