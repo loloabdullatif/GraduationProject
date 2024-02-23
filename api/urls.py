@@ -43,6 +43,11 @@ urlpatterns = [
     path("restaurantTables/", restaurant_views.restaurantTables),
     path("addTable/", restaurant_views.addTable),
     path("restaurantsSearch/", restaurant_views.RestaurantSearch.as_view()),
+    path("restaurants/<int:restaurantId>/availableTables/",
+         restaurant_views.getAvailableTables),
+    path("bookTable/", restaurant_views.bookTable),
+
+
 
     # Amenities
     path('amenities/', amenities_views.getAmenities),

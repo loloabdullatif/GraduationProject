@@ -1,13 +1,18 @@
+import datetime
 import json
 from typing import Iterable
+import pytz
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from django.db.models import Q
+
 import rest_framework.filters as filters
 from django_filters.rest_framework import DjangoFilterBackend
-from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantCuisineSerializer, RestaurantDetailsSerializer, ServiceSerializer, TableSerializer
-from graduationapp.models import Images, Restaurant, Service, Table
+from api.serializer import AddRestaurantSerializer, AddRoomSerializer, AddTableSerializer, AmenitySerializer, ImageSerializer, RestaurantCuisineSerializer, RestaurantDetailsSerializer, ServiceSerializer, TableBookingSerializer, TableSerializer
+from graduationProject import settings
+from graduationapp.models import Images, Restaurant, Service, Table, TableBooking, TouristaUser
 
 
 @api_view(['POST'])
@@ -129,3 +134,99 @@ class RestaurantSearch(generics.ListAPIView):
     ordering_fields = ['rating']
     filterset_fields = ['streetId']
     search_fields = ['name']
+
+
+@api_view(['GET'])
+def getAvailableTables(request, restaurantId):
+    queryParams = request.GET
+    try:
+        capacity = int(queryParams.get('numberOfPeople'))
+        checkInTime = datetime.datetime.strptime(
+            queryParams.get('checkInTime'), '%Y-%m-%d %H:%M')
+        checkoutTime = datetime.datetime.strptime(
+            queryParams.get('checkoutTime'), '%Y-%m-%d %H:%M')
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Query Args')
+
+    restaurantTables = Table.objects.filter(
+        restaurantId=restaurantId, capacity__gte=capacity)
+
+    tableIds = [table.pk for table in restaurantTables]
+    tableBookings = TableBooking.objects.filter(
+        tableId__in=tableIds)
+    excludedTables = []
+    for booking in tableBookings:
+        if (excludedTables.__contains__(booking.tableId)):
+            continue
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInTime=checkInTime, checkoutTime=checkoutTime)):
+            excludedTables.append(booking.tableId)
+
+    availableTables = Table.objects.filter(restaurantId=restaurantId).exclude(
+        Q(pk__in=[table.pk for table in excludedTables]) | Q(capacity__lt=capacity))
+    return Response(status=status.HTTP_200_OK, data=TableSerializer(availableTables, many=True).data)
+
+
+def checkTableAvailability(table, checkInTime, checkoutTime):
+    tableBookings = TableBooking.objects.filter(tableId=table.id)
+    if (checkBookingListOverlappingAgainstRange(bookings=tableBookings, checkInTime=checkInTime, checkoutTime=checkoutTime)):
+        return False
+    return True
+
+
+def checkBookingListOverlappingAgainstRange(bookings, checkInTime, checkoutTime):
+    for booking in bookings:
+        if (checkBookingOverlappingAgainstRange(booking=booking, checkInTime=checkInTime, checkoutTime=checkoutTime)):
+            return True
+    return False
+
+
+def checkBookingOverlappingAgainstRange(booking, checkInTime, checkoutTime):
+    settings_time_zone = pytz.timezone(settings.TIME_ZONE)
+    checkInTime = checkInTime.astimezone(settings_time_zone)
+    checkoutTime = checkoutTime.astimezone(settings_time_zone)
+    if (checkInTime <= booking.checkInTime) and (checkoutTime >= booking.checkoutTime):
+        return True
+    if (checkInTime >= booking.checkInTime) and (checkoutTime <= booking.checkoutTime):
+        return True
+    if (checkoutTime >= booking.checkInTime) and (checkInTime <= booking.checkoutTime):
+        return True
+    if checkInTime <= booking.checkoutTime and checkoutTime >= booking.checkoutTime:
+        return True
+    return False
+
+
+@api_view(['POST'])
+def bookTable(request):
+    data = request.data
+    try:
+        userId = data.get('userId')
+        tableId = data.get('tableId')
+        if (userId == None) or (tableId == None):
+            raise ValueError()
+        checkInTime = datetime.datetime.strptime(
+            data.get('checkInTime'), '%Y-%m-%d %H:%M')
+        checkoutTime = datetime.datetime.strptime(
+            data.get('checkoutTime'), '%Y-%m-%d %H:%M')
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Body Args')
+
+    try:
+        table = Table.objects.get(id=tableId)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST,
+                        data='Table does not exist')
+    try:
+        user = TouristaUser.objects.get(id=userId)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST,
+                        data='User does not exist')
+    if (checkTableAvailability(table=table, checkInTime=checkInTime, checkoutTime=checkoutTime) == False):
+        return Response(status=status.HTTP_400_BAD_REQUEST,
+                        data='Table has been reserved by someone else, try another table')
+
+    tableBookingSerializer = TableBookingSerializer(data=data)
+    if tableBookingSerializer.is_valid():
+        tableBookingSerializer.save()
+        return Response(status=status.HTTP_201_CREATED, data='Booking Successful')
+
+    return Response(tableBookingSerializer.errors, status=status.HTTP_400_BAD_REQUEST)

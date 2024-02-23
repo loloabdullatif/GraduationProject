@@ -1,7 +1,7 @@
 
 from collections import ChainMap
 import datetime
-from graduationapp.models import City, Farm, Cuisine, FarmBooking, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
+from graduationapp.models import City, Farm, Cuisine, FarmBooking, Governate, PublicPlace, RestaurantCuisine, Room, RoomBooking, Street, Table, TableBooking, TouristDestination, TouristDestinationImage, TouristaUser, Hotel, Amenities, Service, Images, Restaurant
 from rest_framework import serializers
 from django.utils import timezone
 
@@ -348,6 +348,12 @@ class TableSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TableBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableBooking
+        fields = "__all__"
+
+
 class TouristDestinationBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -471,6 +477,20 @@ class FarmReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FarmBooking
+        fields = "__all__"
+class RestaurantReservationSerializer(serializers.ModelSerializer):
+    restaurant = serializers.SerializerMethodField(read_only=True)
+    table = serializers.SerializerMethodField(read_only=True)
+
+    def get_table(request, booking):
+        return TableSerializer(booking.tableId).data
+    
+    def get_restaurant(request, booking):
+        return RestaurantDetailsSerializer(booking.tableId.restaurantId).data
+
+
+    class Meta:
+        model = TableBooking
         fields = "__all__"
 
 
