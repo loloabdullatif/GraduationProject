@@ -86,7 +86,7 @@ def  index(request):
 
 
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 def account(request):
     return render(request, 'account.html')
 
@@ -268,7 +268,7 @@ def hotel(request):
 
 
 @csrf_exempt
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 def addhotel(request):
     all_governate = Governate.objects.values_list('governateName', 'id').distinct().order_by()
     all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
@@ -365,7 +365,7 @@ def public_place_detail3(request,resturant_id):
 
 
 @csrf_exempt
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 def addfarm(request):
         all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
         all_city=City.objects.values_list('cityName','id').distinct().order_by()
@@ -417,7 +417,7 @@ def addfarm(request):
     
     
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 def addResturant(request):
         all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
         all_city=City.objects.values_list('cityName','id').distinct().order_by()
@@ -496,7 +496,7 @@ def dashbord(request, hotel_id):
                                                   'availability_percentage': availability_percentage})
     return HttpResponse(response)
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 @csrf_exempt
 def dashbord_Table(request,resturant_id):
     tables = Table.objects.filter(restaurantId=resturant_id)
@@ -623,7 +623,7 @@ def book_table_page(request):
 
 
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 @csrf_exempt
 def tablebooking(request):
     if request.method == "POST":
@@ -697,7 +697,7 @@ def book_farm_page(request):
 
 
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 @csrf_exempt
 def farmbooking(request):
         if request.method == "POST":
@@ -785,7 +785,7 @@ def book_room_page(request):
 
 
 
-@login_required(login_url='/login/')
+@login_required(login_url='login')
 @csrf_exempt
 def roombooking(request):
     if request.method == "POST":
@@ -956,9 +956,8 @@ def allbookings(request, farm_id):
 
 def allroombookings(request, hotel_id):
     hotel = Hotel.objects.get(id=hotel_id)
-    room = Room.objects.all()
-    bookings = RoomBooking.objects.all()
-
+    room = Room.objects.filter(hotelId=hotel_id)
+    bookings = RoomBooking.objects.filter(roomId__in=room)
     context = {
         'hotel':hotel,
         'room': room,
@@ -971,8 +970,8 @@ def allroombookings(request, hotel_id):
 
 def alltablebookings(request, rest_id):
     rest = Restaurant.objects.get(id=rest_id)
-    table = Table.objects.all()
-    bookings = TableBooking.objects.all()
+    table = Table.objects.filter(restaurantId=rest_id)
+    bookings = TableBooking.objects.filter(tableId__in=table)
 
     context = {
         'rest':rest,
