@@ -135,11 +135,11 @@ def bookRoom(request):
 
 
 
-@api_view(['DELETE'])
+@api_view(['POST'])
 def deleteBooking(request, bookingId):
     try:
         booking = RoomBooking.objects.get(id=bookingId)
         booking.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
     except RoomBooking.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
