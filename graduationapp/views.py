@@ -956,7 +956,7 @@ def allbookings(request, farm_id):
 
 def allroombookings(request, hotel_id):
     hotel = Hotel.objects.get(id=hotel_id)
-    room =  Room.objects.all()
+    room = Room.objects.filter(hotelId=hotel_id)
     bookings = RoomBooking.objects.filter(roomId__in=room)
     context = {
         'hotel':hotel,
@@ -970,8 +970,8 @@ def allroombookings(request, hotel_id):
 
 def alltablebookings(request, rest_id):
     rest = Restaurant.objects.get(id=rest_id)
-    table = Table.objects.filter(rest=rest)
-    bookings = TableBooking.objects.all()
+    table = Table.objects.filter(restaurantId=rest_id)
+    bookings = TableBooking.objects.filter(tableId__in=table)
 
     context = {
         'rest':rest,
