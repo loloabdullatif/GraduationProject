@@ -1,3 +1,5 @@
+
+##views
 from django.shortcuts import render
 from django.http import HttpResponse , HttpResponseRedirect
 from django.template import loader
@@ -86,7 +88,7 @@ def  index(request):
 
 
 
-@login_required(login_url='login')
+@login_required
 def account(request):
     return render(request, 'account.html')
 
@@ -268,7 +270,7 @@ def hotel(request):
 
 
 @csrf_exempt
-@login_required(login_url='login')
+@login_required
 def addhotel(request):
     all_governate = Governate.objects.values_list('governateName', 'id').distinct().order_by()
     all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
@@ -365,7 +367,7 @@ def public_place_detail3(request,resturant_id):
 
 
 @csrf_exempt
-@login_required(login_url='login')
+@login_required
 def addfarm(request):
         all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
         all_city=City.objects.values_list('cityName','id').distinct().order_by()
@@ -417,7 +419,7 @@ def addfarm(request):
     
     
 
-@login_required(login_url='login')
+@login_required
 def addResturant(request):
         all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
         all_city=City.objects.values_list('cityName','id').distinct().order_by()
@@ -496,7 +498,7 @@ def dashbord(request, hotel_id):
                                                   'availability_percentage': availability_percentage})
     return HttpResponse(response)
 
-@login_required(login_url='login')
+@login_required
 @csrf_exempt
 def dashbord_Table(request,resturant_id):
     tables = Table.objects.filter(restaurantId=resturant_id)
@@ -623,7 +625,7 @@ def book_table_page(request):
 
 
 
-@login_required(login_url='login')
+@login_required
 @csrf_exempt
 def tablebooking(request):
     if request.method == "POST":
@@ -697,7 +699,7 @@ def book_farm_page(request):
 
 
 
-@login_required(login_url='login')
+@login_required
 @csrf_exempt
 def farmbooking(request):
         if request.method == "POST":
@@ -785,7 +787,7 @@ def book_room_page(request):
 
 
 
-@login_required(login_url='login')
+@login_required
 @csrf_exempt
 def roombooking(request):
     if request.method == "POST":
