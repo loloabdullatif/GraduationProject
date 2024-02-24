@@ -36,6 +36,8 @@ urlpatterns = [
     path("allFarms/", farm_views.allFarms),
     path("farmsSearch/", farm_views.FarmSearch.as_view()),
     path("farms/<int:farmId>/bookFarm/", farm_views.bookFarm),
+    path("deleteFarmBooking/<int:bookingId>/",
+         farm_views.deleteFarmBooking),
 
     # Restaurants
     path('restaurants/new/', restaurant_views.addRestaurant),
@@ -46,6 +48,8 @@ urlpatterns = [
     path("restaurants/<int:restaurantId>/availableTables/",
          restaurant_views.getAvailableTables),
     path("bookTable/", restaurant_views.bookTable),
+    path("deleteTableBooking/<int:bookingId>/",
+         restaurant_views.deleteTableBooking),
 
 
 

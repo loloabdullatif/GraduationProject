@@ -170,3 +170,13 @@ def checkBookingOverlappingAgainstRange(booking, checkInDate, checkoutDate):
         print('excluded on 2')
         return True
     return False
+
+
+@api_view(['POST'])
+def deleteFarmBooking(request, bookingId):
+    try:
+        booking = FarmBooking.objects.get(id=bookingId)
+        booking.delete()
+        return Response(status=status.HTTP_200_OK)
+    except FarmBooking.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)

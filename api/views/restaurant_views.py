@@ -148,6 +148,21 @@ def getAvailableTables(request, restaurantId):
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST, data='Missing Query Args')
 
+    settings_time_zone = pytz.timezone(settings.TIME_ZONE)
+    checkInTime = checkInTime.astimezone(settings_time_zone)
+    checkoutTime = checkoutTime.astimezone(settings_time_zone)
+
+    if (checkInTime > checkoutTime):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Check In Time must be before Checkout Time')
+
+    try:
+        restaurant = Restaurant.objects.get(id=restaurantId)
+    except Restaurant.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='Restaurant not found')
+
+    if (checkInTime.time() < restaurant.openTime):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data='The restaurant will be closed at the time of this booking')
+
     restaurantTables = Table.objects.filter(
         restaurantId=restaurantId, capacity__gte=capacity)
 
@@ -181,9 +196,6 @@ def checkBookingListOverlappingAgainstRange(bookings, checkInTime, checkoutTime)
 
 
 def checkBookingOverlappingAgainstRange(booking, checkInTime, checkoutTime):
-    settings_time_zone = pytz.timezone(settings.TIME_ZONE)
-    checkInTime = checkInTime.astimezone(settings_time_zone)
-    checkoutTime = checkoutTime.astimezone(settings_time_zone)
     if (checkInTime <= booking.checkInTime) and (checkoutTime >= booking.checkoutTime):
         return True
     if (checkInTime >= booking.checkInTime) and (checkoutTime <= booking.checkoutTime):
@@ -230,3 +242,13 @@ def bookTable(request):
         return Response(status=status.HTTP_201_CREATED, data='Booking Successful')
 
     return Response(tableBookingSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def deleteTableBooking(request, bookingId):
+    try:
+        booking = TableBooking.objects.get(id=bookingId)
+        booking.delete()
+        return Response(status=status.HTTP_200_OK)
+    except TableBooking.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
