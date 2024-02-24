@@ -61,7 +61,6 @@ class PublicPlace(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=20, choices=placeType)
     phoneNumber = models.CharField(max_length=10, default="")
-    rating = models.IntegerField(default=1)
     area = models.FloatField(max_length=20, default="")
     facebookLink = models.CharField(max_length=255, null=True, blank=True)
     instagramLink = models.CharField(max_length=255,  null=True, blank=True)
