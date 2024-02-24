@@ -80,7 +80,7 @@
 
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-control" name="governateName" id="name">
+                                            <select class="form-control" name="governateName" id="name" required>
                                               
                                                     <option value="" disabled selected>Select Governate</option>
                                                     {% for governate in all_governate %}
@@ -101,7 +101,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-control" name="cityName" id="name">
+                                            <select class="form-control" name="cityName" id="name" required>
                                                 
                                                     <option value="" disabled selected>Select City</option>
                                                     {% for city in all_city %}

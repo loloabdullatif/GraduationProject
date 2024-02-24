@@ -54,9 +54,9 @@
                                     
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-control" name="cityName" id="name">
+                                            <select class="form-control" name="cityName" id="name" required>
                                                 
-                                                <option value="" disabled selected>Select City</option>
+                                                <option  required value="" disabled selected>Select City</option>
                                                 {% for city in all_city %}
                                                     {% if city.0 %}
                                                         <option value="{{ city.1 }}">{{ city.0 }}</option>
@@ -69,9 +69,9 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select class="form-control" name="governateName" id="name">
+                                            <select class="form-control" name="governateName" id="name" required>
                                             
-                                                <option value="" disabled selected>Select Governate</option>
+                                                <option   value="" disabled selected>Select Governate</option>
                                                 {% for governate in all_governate %}
                                                     {% if governate.0 %}
                                                         <option value="{{ governate.1 }}">{{ governate.0 }}</option>
