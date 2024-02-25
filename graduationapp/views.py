@@ -380,6 +380,7 @@ def addfarm(request):
         street_name = request.POST['streetName']
         phoneNumber = request.POST['phoneNumber']
         area = request.POST['area']
+        price=request.POST['price']
         facebookLink = request.POST['facebookLink']
         instagramLink = request.POST['instagramLink']
         cancellationPolicy = request.POST['cancellationPolicy']
@@ -391,7 +392,7 @@ def addfarm(request):
         city = City.objects.get(id=city_id, governateId=governate)
         streetId = Street.objects.create(cityId=city, streetName=street_name)
         newFarm = Farm(type='farm', streetId=streetId, userId=userId, name=name, rentType=rentType, phoneNumber=phoneNumber, area=area, facebookLink=facebookLink,
-                       instagramLink=instagramLink, cancellationPolicy=cancellationPolicy, policies=policies, kilometersFromCityCenter=kilometersFromCityCenter)
+                       instagramLink=instagramLink, cancellationPolicy=cancellationPolicy, policies=policies, kilometersFromCityCenter=kilometersFromCityCenter,price=price)
         newFarm.save()
         publicPlaceId = newFarm
 
