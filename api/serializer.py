@@ -30,11 +30,10 @@ class UserReturnSerializer(serializers.ModelSerializer):
                   'nationalNumber', 'birthDate', 'phoneNumber', 'isOwner']
 
 
-class AddHotelSerializer(serializers.ModelSerializer):
+class AddHotelOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
-        fields = ['numberOfRooms', 'area', 'numberOfStars',
-                  'phoneNumber', 'type', 'name', 'streetId', 'userId']
+        fields = '__all__'
 
 
 class UpdateDataSerializer(serializers.ModelSerializer):
@@ -135,7 +134,7 @@ class AddHotelSerializer(serializers.ModelSerializer):
         write_only=True
     )
     amenities = serializers.ListField(child=serializers.IntegerField())
-    hotel = AddHotelSerializer()
+    hotel = AddHotelOnlySerializer()
 
     class Meta:
         model = Hotel
@@ -478,16 +477,17 @@ class FarmReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = FarmBooking
         fields = "__all__"
+
+
 class RestaurantReservationSerializer(serializers.ModelSerializer):
     restaurant = serializers.SerializerMethodField(read_only=True)
     table = serializers.SerializerMethodField(read_only=True)
 
     def get_table(request, booking):
         return TableSerializer(booking.tableId).data
-    
+
     def get_restaurant(request, booking):
         return RestaurantDetailsSerializer(booking.tableId.restaurantId).data
-
 
     class Meta:
         model = TableBooking
