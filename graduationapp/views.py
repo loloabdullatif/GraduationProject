@@ -1,33 +1,33 @@
 
-##views
+# views
 from django.shortcuts import render
-from django.http import HttpResponse , HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from graduationapp.models import Farm,PublicPlace,FarmBooking,TouristaUser
+from graduationapp.models import Farm, PublicPlace, FarmBooking, TouristaUser
 from django.db.models import Subquery
 # from django.contrib.auth.models import User
-#web imports
+# web imports
 from audioop import avg, avgpp
 import datetime
 from pyexpat.errors import messages
 from django import forms
 from django.contrib import messages
-from django.shortcuts import redirect, render ,HttpResponseRedirect, get_object_or_404
+from django.shortcuts import redirect, render, HttpResponseRedirect, get_object_or_404
 from django.template import loader
-from django.http import  HttpResponse , JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
-#from userapp import models
-from django.views.decorators.csrf import csrf_exempt , csrf_protect
+# from userapp import models
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.utils import timezone
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import User , auth
-from .models import Cuisine, FarmBooking, RestaurantCuisine, Room, Service, TouristaUser ,  Hotel , PublicPlace ,RoomBooking ,Farm , Restaurant ,Images,Governate,City,Street , Table, TableBooking,Amenities, TouristDestination, TouristDestinationImage
+from django.contrib.auth.models import User, auth
+from .models import Cuisine, FarmBooking, RestaurantCuisine, Room, Service, TouristaUser,  Hotel, PublicPlace, RoomBooking, Farm, Restaurant, Images, Governate, City, Street, Table, TableBooking, Amenities, TouristDestination, TouristDestinationImage
 from django.contrib.auth.decorators import login_required
-#from .decorators import forAdmin
+# from .decorators import forAdmin
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import user_passes_test
-from datetime import datetime,time  ,timedelta
+from datetime import datetime, time, timedelta
 import json
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
@@ -75,17 +75,17 @@ from .forms import LoginForm
 #     # TODO: return a proper web page
 #     return redirect('login')
 
-#web views
-def  index(request):
+# web views
+def index(request):
     images = TouristDestinationImage.objects.all()
 
-    hotel=Hotel.objects.all().count()
-    farm=Farm.objects.all().count()
-    restaurant=Restaurant.objects.all().count()
+    hotel = Hotel.objects.all().count()
+    farm = Farm.objects.all().count()
+    restaurant = Restaurant.objects.all().count()
     username = request.user.username
-    response = render(request,'index.html',{'images': images,'hotel':hotel,'farm':farm,'restaurant':restaurant,'username': username})
+    response = render(request, 'index.html', {
+                      'images': images, 'hotel': hotel, 'farm': farm, 'restaurant': restaurant, 'username': username})
     return HttpResponse(response)
-
 
 
 @login_required
@@ -97,7 +97,7 @@ def account(request):
 def adminpage(request):
     publicplace = PublicPlace.objects.all()
     return render(request, 'adminpage.html', {'publicplace': publicplace})
-    
+
 
 @login_required
 def approve_place(request, publicplace_id):
@@ -107,6 +107,7 @@ def approve_place(request, publicplace_id):
     place.save()
     return redirect('/adminpage')
 
+
 @login_required
 def reject_place(request, publicplace_id):
     place = get_object_or_404(PublicPlace, id=publicplace_id)
@@ -114,61 +115,59 @@ def reject_place(request, publicplace_id):
     return redirect('/adminpage')
 
 
-
 def yourplace(request):
     hotels = Hotel.objects.filter(userId=request.user)
     farms = Farm.objects.filter(userId=request.user)
     restaurants = Restaurant.objects.filter(userId=request.user)
-    return render(request, 'yourplace.html', {'hotels': hotels,'farms':farms,'restaurants':restaurants})
-    
+    return render(request, 'yourplace.html', {'hotels': hotels, 'farms': farms, 'restaurants': restaurants})
 
 
-    
-
-def mybooking (request):
+def mybooking(request):
     tableb = TableBooking.objects.filter(userId=request.user)
     hotelb = RoomBooking.objects.filter(userId=request.user)
-    farmb=FarmBooking.objects.filter(userId=request.user)
-    return render(request, 'mybooking.html', {'tableb': tableb, 'hotelb': hotelb,'farmb':farmb})
+    farmb = FarmBooking.objects.filter(userId=request.user)
+    return render(request, 'mybooking.html', {'tableb': tableb, 'hotelb': hotelb, 'farmb': farmb})
+
 
 def delete_mybookingfarm(request, farmbooking_id):
     farmbooking = FarmBooking.objects.get(id=farmbooking_id)
-    farm_id=farmbooking.farmId.id
+    farm_id = farmbooking.farmId.id
     farmbooking.delete()
-    return redirect(f'/allbookings/{farm_id}')   
-    
+    return redirect(f'/allbookings/{farm_id}')
 
-      
+
 def delete_myroombooking(request, roombooking_id):
-    roombooking =RoomBooking.objects.get(id=roombooking_id)
+    roombooking = RoomBooking.objects.get(id=roombooking_id)
     hotel_id = roombooking.roomId.hotelId.id
     roombooking.delete()
-    return redirect(f'/allroombookings/{hotel_id}')       
-    
+    return redirect(f'/allroombookings/{hotel_id}')
+
+
 def delete_mytablebooking(request, tablebooking_id):
-    tablebooking =TableBooking.objects.get(id=tablebooking_id)
-    resturent_id=tablebooking.tableId.restaurantId.id
+    tablebooking = TableBooking.objects.get(id=tablebooking_id)
+    resturent_id = tablebooking.tableId.restaurantId.id
     tablebooking.delete()
-    
-    return redirect(f'/alltablebookings/{resturent_id}') 
-             
+
+    return redirect(f'/alltablebookings/{resturent_id}')
+
+
 def delete_farmbooking(request, farmbooking_id):
     farmbooking = FarmBooking.objects.get(id=farmbooking_id)
     farmbooking.delete()
-    
+
     return redirect('/mybookings')
 
 
 def delete_roombooking(request, roombooking_id):
-    roombooking=RoomBooking.objects.get(id=roombooking_id)
+    roombooking = RoomBooking.objects.get(id=roombooking_id)
     roombooking.delete()
     return redirect('/mybookings')
 
+
 def delete_tablebooking(request, tablebooking_id):
-    tablebooking=TableBooking.objects.get(id=tablebooking_id)
+    tablebooking = TableBooking.objects.get(id=tablebooking_id)
     tablebooking.delete()
     return redirect('/mybookings')
-
 
 
 @csrf_exempt
@@ -194,10 +193,10 @@ def registration(request):
                 return redirect('/registration')
             else:
                 user = TouristaUser.objects.create_user(first_name=first_name, last_name=last_name, username=username,
-                                                  password=password, nationalNumber=nationalNumber,
-                                                  phoneNumber=phoneNumber, birthDate=birthDate)
+                                                        password=password, nationalNumber=nationalNumber,
+                                                        phoneNumber=phoneNumber, birthDate=birthDate)
                 user.save()
-                #login(request, user)
+                # login(request, user)
                 messages.success(request, "Registration successful.")
                 return redirect('/')
         else:
@@ -206,45 +205,47 @@ def registration(request):
 
     return render(request, 'registration.html', {'messages': messages.get_messages(request)})
 
-#template = 'login.html'
+# template = 'login.html'
+
+
 @csrf_exempt
-def  login(request):
-    #template = loader.get_template('index.html') 
-    if request.method=='POST':
-        username=request.POST['username']
-        password=request.POST['password']
-        
-        user=auth.authenticate(username=username,password=password)
-        
-        if user is not None :
-            auth.login(request ,user)
+def login(request):
+    # template = loader.get_template('index.html')
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = auth.authenticate(username=username, password=password)
+
+        if user is not None:
+            auth.login(request, user)
             return redirect('/')
         else:
             # كلمة المرور غير صحيحة
             messages.error(request, "Invalid username or password.")
-            
+
             return render(request, 'login.html')
 
     return render(request, 'login.html')
+
 
 def logout_view(request):
    # if request.user
     logout(request)
     return redirect('/')
-  
-
 
 
 def profile(request):
     username = request.user.username
     return render(request, 'profile.html', {'username': username})
 
+
 def hotel(request):
-   
+
     hotels = Hotel.objects.filter(isApproved=1)
-    #hotels = Hotel.objects.all()
-    users=TouristaUser.objects.all()
-    
+    # hotels = Hotel.objects.all()
+    users = TouristaUser.objects.all()
+
     context = {}
     for hotel in hotels:
         user = hotel.userId
@@ -252,235 +253,236 @@ def hotel(request):
         images = hotel.images_set.all()
 
         context[hotel.id] = {"numberOfRooms": hotel.numberOfRooms,
-                              "numberOfStars": hotel.numberOfStars,
-                              "name":hotel.name,
-                              "username":user.username,
-                              "hotel_id":hotel.id,
-                              "streetId":hotel.streetId,
-                              "images": images ,
-                              "phoneNumber":hotel.phoneNumber,
-                              "cityId":hotel.streetId.cityId,
-                              
-            
-                              }
+                             "numberOfStars": hotel.numberOfStars,
+                             "name": hotel.name,
+                             "username": user.username,
+                             "hotel_id": hotel.id,
+                             "streetId": hotel.streetId,
+                             "images": images,
+                             "phoneNumber": hotel.phoneNumber,
+                             "cityId": hotel.streetId.cityId,
 
-        
-    return render(request=request, template_name="hotel.html", context={"data":context})
 
+                             }
+
+    return render(request=request, template_name="hotel.html", context={"data": context})
 
 
 @csrf_exempt
 @login_required
 def addhotel(request):
-    all_governate = Governate.objects.values_list('governateName', 'id').distinct().order_by()
+    all_governate = Governate.objects.values_list(
+        'governateName', 'id').distinct().order_by()
     all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
-    amenities = Amenities.objects.filter(type='Hotel')  
-    if request.method == 'POST' :
+    amenities = Amenities.objects.filter(type='Hotel')
+    if request.method == 'POST':
         name = request.POST['name']
         governate_id = request.POST.get('governateName', 'id')
-        city_id = request.POST.get('cityName') # ,''
+        city_id = request.POST.get('cityName')  # ,''
         street_name = request.POST['streetName']
-        numberOfRooms=request.POST['numberOfRooms']
-        phoneNumber=request.POST['phoneNumber']
-        numberOfStars=request.POST['numberOfStars']
-        area=request.POST['area']
-        facebookLink=request.POST['facebookLink']
-        instagramLink=request.POST['instagramLink']
-        cancellationPolicy=request.POST['cancellationPolicy']
-        policies=request.POST['policies']
-        kilometersFromCityCenter=request.POST['kilometersFromCityCenter']
+        numberOfRooms = request.POST['numberOfRooms']
+        phoneNumber = request.POST['phoneNumber']
+        numberOfStars = request.POST['numberOfStars']
+        area = request.POST['area']
+        facebookLink = request.POST['facebookLink']
+        instagramLink = request.POST['instagramLink']
+        cancellationPolicy = request.POST['cancellationPolicy']
+        policies = request.POST['policies']
+        kilometersFromCityCenter = request.POST['kilometersFromCityCenter']
         userId = request.user
         governate = Governate.objects.get(id=governate_id)
         city = City.objects.get(id=city_id, governateId=governate)
         streetId = Street.objects.create(cityId=city, streetName=street_name)
-        newHotel = Hotel(streetId=streetId,userId=userId,name=name, numberOfRooms= numberOfRooms,phoneNumber=phoneNumber,numberOfStars= numberOfStars,area=area,facebookLink=facebookLink,instagramLink=instagramLink,cancellationPolicy=cancellationPolicy,policies=policies,kilometersFromCityCenter=kilometersFromCityCenter,isApproved=False)
+        newHotel = Hotel(type='hotel', streetId=streetId, userId=userId, name=name, numberOfRooms=numberOfRooms, phoneNumber=phoneNumber, numberOfStars=numberOfStars, area=area, facebookLink=facebookLink,
+                         instagramLink=instagramLink, cancellationPolicy=cancellationPolicy, policies=policies, kilometersFromCityCenter=kilometersFromCityCenter, isApproved=False)
         newHotel.save()
-        publicPlaceId=newHotel
-    
-        files=request.FILES.getlist('path')
+        publicPlaceId = newHotel
+
+        files = request.FILES.getlist('path')
         for i in files:
-            image=Images.objects.create(publicPlaceId=publicPlaceId,path =i)
+            image = Images.objects.create(publicPlaceId=publicPlaceId, path=i)
             image.save()
-            
+
         amenity_ids = request.POST.getlist('amenityIds[]')
-        
+
         # حفظ الـ Amenities المحددة في النموذج Service
         for amenity_id in amenity_ids:
             amenity = Amenities.objects.get(id=amenity_id)
             service = Service(publicPlaceId=newHotel, amenityId=amenity)
             service.save()
 
-        messages.success(request,'The request will be reviewed. Please wait for approval')
-        return redirect('/addhotel/addroom/'+str(newHotel.id))    
+        messages.success(
+            request, 'The request will be reviewed. Please wait for approval')
+        return redirect('/addhotel/addroom/'+str(newHotel.id))
 
     else:
-        response = render(request,'addhotel.html',{'all_governate':all_governate,'all_city':all_city,'amenities': amenities})
+        response = render(request, 'addhotel.html', {
+                          'all_governate': all_governate, 'all_city': all_city, 'amenities': amenities})
         return HttpResponse(response)
-    
-        
-            
-        
-    
+
+
 @csrf_exempt
-def public_place_detail(request,hotel_id):
-        public_place = PublicPlace.objects.get(pk=hotel_id)
-        images = public_place.images_set.all()
-        amenities=Service.objects.filter(publicPlaceId=hotel_id)
-        
-   
-        context = {
-          
-            'public_place': public_place,
-            'images': images,
-            'amenities':amenities,
-        }
-   
-        return render(request, 'detailhotel.html', context)
+def public_place_detail(request, hotel_id):
+    public_place = PublicPlace.objects.get(pk=hotel_id)
+    images = public_place.images_set.all()
+    amenities = Service.objects.filter(publicPlaceId=hotel_id)
 
-def public_place_detail2(request,farm_id):
-        public_place = PublicPlace.objects.get(pk=farm_id)
-        images = public_place.images_set.all()# استرجاع الصور المرتبطة بالمكان العام
-        amenities=Service.objects.filter(publicPlaceId=farm_id)
-       # average_rating = PublicPlace.objects.filter(pk=farm_id).aggregate(average_rating=avgpp('rating'))['rating']
-        context = {
-            'public_place': public_place,
-            'images': images,
-            'amenities':amenities,
-          #  'average_rating':average_rating,
-        }
-   
-        return render(request, 'detailfarm.html', context)
+    context = {
 
-def public_place_detail3(request,resturant_id):
-        public_place = PublicPlace.objects.get(pk=resturant_id)
-        images = public_place.images_set.all()# استرجاع الصور المرتبطة بالمكان العام
-        amenities=Service.objects.filter(publicPlaceId=resturant_id)
-        context = {
-            'public_place': public_place,
-            'images': images,
-            'amenities':amenities,
-        }
-   
-        return render(request, 'detailres.html', context)
+        'public_place': public_place,
+        'images': images,
+        'amenities': amenities,
+    }
+
+    return render(request, 'detailhotel.html', context)
 
 
+def public_place_detail2(request, farm_id):
+    public_place = PublicPlace.objects.get(pk=farm_id)
+    images = public_place.images_set.all()  # استرجاع الصور المرتبطة بالمكان العام
+    amenities = Service.objects.filter(publicPlaceId=farm_id)
+   # average_rating = PublicPlace.objects.filter(pk=farm_id).aggregate(average_rating=avgpp('rating'))['rating']
+    context = {
+        'public_place': public_place,
+        'images': images,
+        'amenities': amenities,
+        #  'average_rating':average_rating,
+    }
+
+    return render(request, 'detailfarm.html', context)
+
+
+def public_place_detail3(request, resturant_id):
+    public_place = PublicPlace.objects.get(pk=resturant_id)
+    images = public_place.images_set.all()  # استرجاع الصور المرتبطة بالمكان العام
+    amenities = Service.objects.filter(publicPlaceId=resturant_id)
+    context = {
+        'public_place': public_place,
+        'images': images,
+        'amenities': amenities,
+    }
+
+    return render(request, 'detailres.html', context)
 
 
 @csrf_exempt
 @login_required
 def addfarm(request):
-        all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
-        all_city=City.objects.values_list('cityName','id').distinct().order_by()
-        # all_street=Street.objects.values_list('streetName','id').distinct().order_by()
-        amenities = Amenities.objects.filter(type='Farm')
-        if request.method == 'POST' :
-            name = request.POST['name']
-            governate_id= request.POST.get('governateName','id')
-            city_id = request.POST.get('cityName')
-            street_name = request.POST['streetName']
-            phoneNumber=request.POST['phoneNumber']
-            area=request.POST['area']
-            facebookLink=request.POST['facebookLink']
-            instagramLink=request.POST['instagramLink']
-            cancellationPolicy=request.POST['cancellationPolicy']
-            policies=request.POST['policies']
-            kilometersFromCityCenter=request.POST['kilometersFromCityCenter']
-            rentType=request.POST['rentType']
-            userId = request.user
-            governate = Governate.objects.get(id=governate_id)
-            city = City.objects.get(id=city_id, governateId=governate)
-            streetId = Street.objects.create(cityId=city, streetName=street_name)
-            newFarm = Farm(streetId=streetId,userId=userId,name=name,rentType=rentType,phoneNumber=phoneNumber,area=area,facebookLink=facebookLink,instagramLink=instagramLink,cancellationPolicy=cancellationPolicy,policies=policies,kilometersFromCityCenter=kilometersFromCityCenter)
-            newFarm.save()
-            publicPlaceId=newFarm
-          
-            files=request.FILES.getlist('path')
-            for i in files:
-                image=Images.objects.create(publicPlaceId=publicPlaceId,path =i)
-                image.save()
+    all_governate = Governate.objects.values_list(
+        'governateName', 'id').distinct().order_by()
+    all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
+    # all_street=Street.objects.values_list('streetName','id').distinct().order_by()
+    amenities = Amenities.objects.filter(type='Farm')
+    if request.method == 'POST':
+        name = request.POST['name']
+        governate_id = request.POST.get('governateName', 'id')
+        city_id = request.POST.get('cityName')
+        street_name = request.POST['streetName']
+        phoneNumber = request.POST['phoneNumber']
+        area = request.POST['area']
+        facebookLink = request.POST['facebookLink']
+        instagramLink = request.POST['instagramLink']
+        cancellationPolicy = request.POST['cancellationPolicy']
+        policies = request.POST['policies']
+        kilometersFromCityCenter = request.POST['kilometersFromCityCenter']
+        rentType = request.POST['rentType']
+        userId = request.user
+        governate = Governate.objects.get(id=governate_id)
+        city = City.objects.get(id=city_id, governateId=governate)
+        streetId = Street.objects.create(cityId=city, streetName=street_name)
+        newFarm = Farm(type='farm', streetId=streetId, userId=userId, name=name, rentType=rentType, phoneNumber=phoneNumber, area=area, facebookLink=facebookLink,
+                       instagramLink=instagramLink, cancellationPolicy=cancellationPolicy, policies=policies, kilometersFromCityCenter=kilometersFromCityCenter)
+        newFarm.save()
+        publicPlaceId = newFarm
 
-            
-            amenity_ids = request.POST.getlist('amenityIds[]')
-        
-        # حفظ الـ Amenities المحددة في النموذج Service
-            for amenity_id in amenity_ids:
-                amenity = Amenities.objects.get(id=amenity_id)
-                service = Service(publicPlaceId=newFarm, amenityId=amenity)
-                service.save()
+        files = request.FILES.getlist('path')
+        for i in files:
+            image = Images.objects.create(publicPlaceId=publicPlaceId, path=i)
+            image.save()
 
-            messages.success(request,'The request will be reviewed. Please wait for approval')
-            return redirect("/farm")
+        amenity_ids = request.POST.getlist('amenityIds[]')
 
-        else:
-            response = render(request,'addfarm.html',{'all_governate':all_governate,'all_city':all_city,'amenities': amenities})
-            return HttpResponse(response)
-    
-    
-    
-    
+    # حفظ الـ Amenities المحددة في النموذج Service
+        for amenity_id in amenity_ids:
+            amenity = Amenities.objects.get(id=amenity_id)
+            service = Service(publicPlaceId=newFarm, amenityId=amenity)
+            service.save()
+
+        messages.success(
+            request, 'The request will be reviewed. Please wait for approval')
+        return redirect("/farm")
+
+    else:
+        response = render(request, 'addfarm.html', {
+                          'all_governate': all_governate, 'all_city': all_city, 'amenities': amenities})
+        return HttpResponse(response)
+
 
 @login_required
 def addResturant(request):
-        all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
-        all_city=City.objects.values_list('cityName','id').distinct().order_by()
-        amenities = Amenities.objects.filter(type='Restaurant')
-        cuisines = Cuisine.objects.all()
-        if request.method == 'POST' :
-            governate_id= request.POST.get('governateName','id')
-            city_id = request.POST.get('cityName')
-            street_name = request.POST['streetName']
-            name = request.POST['name']
-            openTime= request.POST['openTime']
-   
-            phoneNumber=request.POST['phoneNumber']
-            userId = request.user
-            governate = Governate.objects.get(id=governate_id)
-            city = City.objects.get(id=city_id, governateId=governate)
-            streetId = Street.objects.create(cityId=city, streetName=street_name)
-            area=request.POST['area']
-            facebookLink=request.POST['facebookLink']
-            instagramLink=request.POST['instagramLink']
-            cancellationPolicy=request.POST['cancellationPolicy']
-            policies=request.POST['policies']
-            kilometersFromCityCenter=request.POST['kilometersFromCityCenter']
-            newRestaurant = Restaurant(phoneNumber=phoneNumber,streetId=streetId,userId=userId,name=name,openTime=openTime,area=area,facebookLink=facebookLink,instagramLink=instagramLink,cancellationPolicy=cancellationPolicy,policies=policies,kilometersFromCityCenter=kilometersFromCityCenter)
-            newRestaurant.save()
-            PublicPlaceId=newRestaurant
-        #    messages.success(request,'add successfully')
-            files=request.FILES.getlist('path')
-            for i in files:
-                image=Images.objects.create(publicPlaceId=PublicPlaceId,path =i)
-                image.save()
-            amenity_ids = request.POST.getlist('amenityIds[]')
-        
-            for amenity_id in amenity_ids:
-                amenity = Amenities.objects.get(id=amenity_id)
-                service = Service(publicPlaceId=newRestaurant, amenityId=amenity)
-                service.save()
-                
-            cuisine_ids = request.POST.getlist('cuisineIds[]')
-        
-            for cuisine_id in cuisine_ids:
-                cuisine = Cuisine.objects.get(id=cuisine_id)
-                restaurantCuisine = RestaurantCuisine(restaurantId=newRestaurant, cuisineId=cuisine)
-                restaurantCuisine.save()    
+    all_governate = Governate.objects.values_list(
+        'governateName', 'id').distinct().order_by()
+    all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
+    amenities = Amenities.objects.filter(type='Restaurant')
+    cuisines = Cuisine.objects.all()
+    if request.method == 'POST':
+        governate_id = request.POST.get('governateName', 'id')
+        city_id = request.POST.get('cityName')
+        street_name = request.POST['streetName']
+        name = request.POST['name']
+        openTime = request.POST['openTime']
 
-            messages.success(request,'The request will be reviewed. Please wait for approval')
+        phoneNumber = request.POST['phoneNumber']
+        userId = request.user
+        governate = Governate.objects.get(id=governate_id)
+        city = City.objects.get(id=city_id, governateId=governate)
+        streetId = Street.objects.create(cityId=city, streetName=street_name)
+        area = request.POST['area']
+        facebookLink = request.POST['facebookLink']
+        instagramLink = request.POST['instagramLink']
+        cancellationPolicy = request.POST['cancellationPolicy']
+        policies = request.POST['policies']
+        kilometersFromCityCenter = request.POST['kilometersFromCityCenter']
+        newRestaurant = Restaurant(type='restaurant', phoneNumber=phoneNumber, streetId=streetId, userId=userId, name=name, openTime=openTime, area=area,
+                                   facebookLink=facebookLink, instagramLink=instagramLink, cancellationPolicy=cancellationPolicy, policies=policies, kilometersFromCityCenter=kilometersFromCityCenter)
+        newRestaurant.save()
+        PublicPlaceId = newRestaurant
+    #    messages.success(request,'add successfully')
+        files = request.FILES.getlist('path')
+        for i in files:
+            image = Images.objects.create(publicPlaceId=PublicPlaceId, path=i)
+            image.save()
+        amenity_ids = request.POST.getlist('amenityIds[]')
 
-            template = loader.get_template('addtable.html')
-            return redirect('/addResturant/addtable/'+str(newRestaurant.id))    
+        for amenity_id in amenity_ids:
+            amenity = Amenities.objects.get(id=amenity_id)
+            service = Service(publicPlaceId=newRestaurant, amenityId=amenity)
+            service.save()
 
-        else:
-            response = render(request,'addRestaurant.html',{'all_governate':all_governate,'all_city':all_city,'amenities': amenities , 'cuisines':cuisines})
-        return HttpResponse(response)
-    
+        cuisine_ids = request.POST.getlist('cuisineIds[]')
+
+        for cuisine_id in cuisine_ids:
+            cuisine = Cuisine.objects.get(id=cuisine_id)
+            restaurantCuisine = RestaurantCuisine(
+                restaurantId=newRestaurant, cuisineId=cuisine)
+            restaurantCuisine.save()
+
+        messages.success(
+            request, 'The request will be reviewed. Please wait for approval')
+
+        template = loader.get_template('addtable.html')
+        return redirect('/addResturant/addtable/'+str(newRestaurant.id))
+
+    else:
+        response = render(request, 'addRestaurant.html', {
+                          'all_governate': all_governate, 'all_city': all_city, 'amenities': amenities, 'cuisines': cuisines})
+    return HttpResponse(response)
 
 
 def dashbord(request, hotel_id):
     rooms = Room.objects.filter(hotelId=hotel_id)
     total_rooms = len(rooms)
-   
-  
+
     reserved = len(RoomBooking.objects.all())
 
     hotel = Hotel.objects.values_list('name', 'id').distinct().order_by()
@@ -489,140 +491,139 @@ def dashbord(request, hotel_id):
     if total_rooms > 0:
         availability_percentage = (total_rooms / total_rooms) * 100
     else:
-        messages.error(request,'no rooms in this hotel')
+        messages.error(request, 'no rooms in this hotel')
         return redirect('/yourplace')
 
     response = render(request, 'dashbord.html', {'location': hotel, 'reserved': reserved, 'rooms': rooms,
-                                                  'total_rooms': total_rooms, 
-                                                  
-                                                  'availability_percentage': availability_percentage})
+                                                 'total_rooms': total_rooms,
+
+                                                 'availability_percentage': availability_percentage})
     return HttpResponse(response)
+
 
 @login_required
 @csrf_exempt
-def dashbord_Table(request,resturant_id):
+def dashbord_Table(request, resturant_id):
     tables = Table.objects.filter(restaurantId=resturant_id)
     total_tables = len(tables)
     reserved = len(TableBooking.objects.all())
 
-    restaurant = Restaurant.objects.values_list('name','id').distinct().order_by()
-    
+    restaurant = Restaurant.objects.values_list(
+        'name', 'id').distinct().order_by()
+
     if total_tables > 0:
         availability_percentage = (total_tables / total_tables) * 100
     else:
-        messages.error(request,'no tables in this restaurant')
+        messages.error(request, 'no tables in this restaurant')
         return redirect('/yourplace')
 
-    response = render(request,'dashbordTable.html',{'restaurant':restaurant,'reserved':reserved,'tables':tables,'total_tables':total_tables,'availability_percentage': availability_percentage})
+    response = render(request, 'dashbordTable.html', {'restaurant': restaurant, 'reserved': reserved,
+                      'tables': tables, 'total_tables': total_tables, 'availability_percentage': availability_percentage})
     return HttpResponse(response)
 
- 
 
 def farm(request):
     farms = Farm.objects.filter(isApproved=1)
-    users=TouristaUser.objects.all()
-    #images=Image.objects.all()
+    users = TouristaUser.objects.all()
+    # images=Image.objects.all()
     context = {}
     for farm in farms:
         user = farm.userId
         username = user.username
         images = farm.images_set.all()
-        
+
         context[farm.id] = {
-                              "name":farm.name,
-                              "username":user.username,
-                              "farm_id":farm.id,
-                              "streetId":farm.streetId,
-                              "images":images,
-                              "cityId":farm.streetId.cityId,
-                              "rentType":farm.rentType,
-                              "phoneNumber":farm.phoneNumber,
-                            
-                              }
-        
-    return render(request=request, template_name="farm.html", context={"data":context})
+            "name": farm.name,
+            "username": user.username,
+            "farm_id": farm.id,
+            "streetId": farm.streetId,
+            "images": images,
+            "cityId": farm.streetId.cityId,
+            "rentType": farm.rentType,
+            "phoneNumber": farm.phoneNumber,
+
+        }
+
+    return render(request=request, template_name="farm.html", context={"data": context})
 
 
 def Resturant(request):
-        resturants = Restaurant.objects.filter(isApproved=1)
-        users=TouristaUser.objects.all()
-       
-        context = {}
-        for resturant in resturants:
-            user = resturant.userId
-            username = user.username
-            images = resturant.images_set.all()
+    resturants = Restaurant.objects.filter(isApproved=1)
+    users = TouristaUser.objects.all()
 
-            context[resturant.id] = {
-                                "name":resturant.name,
-                                "username":user.username,
-                                "cityId":resturant.streetId.cityId,
-                                "streetId":resturant.streetId,
-                                "images":images,
-                                "resturant_id":resturant.id,
-                                "openTime":resturant.openTime,
-                                 "cityId":resturant.streetId.cityId,
-                        
-                                }
+    context = {}
+    for resturant in resturants:
+        user = resturant.userId
+        username = user.username
+        images = resturant.images_set.all()
 
-            
-        return render(request=request, template_name="Resturant.html", context={"data":context})
+        context[resturant.id] = {
+            "name": resturant.name,
+            "username": user.username,
+            "cityId": resturant.streetId.cityId,
+            "streetId": resturant.streetId,
+            "images": images,
+            "resturant_id": resturant.id,
+            "openTime": resturant.openTime,
+            "cityId": resturant.streetId.cityId,
 
+        }
 
-    
+    return render(request=request, template_name="Resturant.html", context={"data": context})
+
 
 @csrf_exempt
-def table(request,resturant_id):
+def table(request, resturant_id):
     restaurant = Restaurant.objects.get(id=resturant_id)
-    tables= Table.objects.filter(restaurantId=resturant_id)   
-    users=TouristaUser.objects.all()
-    #images=Image.objects.all()
+    tables = Table.objects.filter(restaurantId=resturant_id)
+    users = TouristaUser.objects.all()
+    # images=Image.objects.all()
 
     context = {}
     for table in tables:
-        
+
         context[table.id] = {
-                
-                                
-                                "table_id":table.id,
-                                "tableNumber": table.tableNumber,
-                                "capacity": table.capacity,
-                                "tableType":table.tableType,
-                                "restaurant":restaurant,
-                                }
-        
-    return render(request=request, template_name="table.html", context={"data":context})
+
+
+            "table_id": table.id,
+            "tableNumber": table.tableNumber,
+            "capacity": table.capacity,
+            "tableType": table.tableType,
+            "restaurant": restaurant,
+        }
+
+    return render(request=request, template_name="table.html", context={"data": context})
+
 
 @csrf_exempt
-def addtable(request,resturant_id):
+def addtable(request, resturant_id):
     if request.method == "POST":
-        restaurant =Restaurant.objects.get(id=resturant_id)
+        restaurant = Restaurant.objects.get(id=resturant_id)
         tableNumber = int(request.POST['tableNumber'])
-        capacity=int(request.POST['capacity'])
-        tableType=request.POST['tableType']
+        capacity = int(request.POST['capacity'])
+        tableType = request.POST['tableType']
         new_table = Table.objects.create(
             restaurantId=restaurant,
             tableNumber=tableNumber,
             capacity=capacity,
             tableType=tableType,
-          
-           
-            )
+
+
+        )
         new_table.save()
         messages.success(request, "add table successfully")
         #
-        return HttpResponseRedirect(request.path_info)    
+        return HttpResponseRedirect(request.path_info)
 
     else:
         return render(request, 'addtable.html')
-    
-#table booking
+
+# table booking
+
 
 def book_table_page(request):
     table = Table.objects.all().get(id=int(request.GET['table_id']))
-    return HttpResponse(render(request,'tablebooking.html',{'table':table}))
-
-
+    return HttpResponse(render(request, 'tablebooking.html', {'table': table}))
 
 
 @login_required
@@ -632,48 +633,55 @@ def tablebooking(request):
         table_id = request.POST.get('table_id')
         check_in = request.POST['check_in']
         check_out = request.POST['check_out']
-        
+
         # تحديد وقت الافتتاح والإغلاق للمطعم
-        restaurant = Restaurant.objects.first()  # استبدل بالطريقة المناسبة لاسترداد المطعم المطلوب
-        open_time = time(hour=restaurant.openTime.hour, minute=restaurant.openTime.minute)
+        # استبدل بالطريقة المناسبة لاسترداد المطعم المطلوب
+        restaurant = Restaurant.objects.first()
+        open_time = time(hour=restaurant.openTime.hour,
+                         minute=restaurant.openTime.minute)
         close_time = time(hour=23, minute=59, second=59)
 
         # التحقق من صحة وقت الحجز
         try:
             check_in_time = datetime.strptime(check_in, "%Y-%m-%dT%H:%M")
             check_out_time = datetime.strptime(check_out, "%Y-%m-%dT%H:%M")
-            
+
             current_date = datetime.now()
-            
+
             if check_in_time <= current_date:
-                messages.warning(request,"Check-in date must be in the future.")
+                messages.warning(
+                    request, "Check-in date must be in the future.")
                 return redirect(f'/book-table?table_id={table_id}')
-            
+
             if check_in_time >= check_out_time:
-                messages.warning(request,"Check-in date must be before check-out date.")
+                messages.warning(
+                    request, "Check-in date must be before check-out date.")
                 return redirect(f'/book-table?table_id={table_id}')
-            
+
             if check_in_time.time() < open_time or check_out_time.time() > close_time:
-                messages.warning(request, "Table booking is only available between the restaurants opening and closing times.")
+                messages.warning(
+                    request, "Table booking is only available between the restaurants opening and closing times.")
                 return redirect(f'/book-table?table_id={table_id}')
              #   raise ValidationError("Table booking is only available between the restaurant's opening and closing times.")
-            
+
             conflicting_bookings = TableBooking.objects.filter(
                 Q(tableId__id=table_id) &
                 (Q(checkInTime__lte=check_in_time, checkoutTime__gte=check_in_time) |
-                Q(checkInTime__lte=check_out_time, checkoutTime__gte=check_out_time) |
-                Q(checkInTime__gte=check_in_time, checkoutTime__lte=check_out_time))
+                 Q(checkInTime__lte=check_out_time, checkoutTime__gte=check_out_time) |
+                 Q(checkInTime__gte=check_in_time, checkoutTime__lte=check_out_time))
             )
 
             if conflicting_bookings.exists():
                 conflicting_booking = conflicting_bookings.first()
-                messages.warning(request, f"Sorry, this table is unavailable for booking. It is already booked from {conflicting_booking.checkInTime} to {conflicting_booking.checkoutTime}.")
+                messages.warning(
+                    request, f"Sorry, this table is unavailable for booking. It is already booked from {conflicting_booking.checkInTime} to {conflicting_booking.checkoutTime}.")
                 return redirect(f'/book-table?table_id={table_id}')
             else:
                 currenTouristaUser = request.user.username
                 tablebooking = TableBooking()
                 table_object = Table.objects.get(id=table_id)
-                user_object = TouristaUser.objects.get(username=currenTouristaUser)
+                user_object = TouristaUser.objects.get(
+                    username=currenTouristaUser)
                 tablebooking.price = 1000
                 tablebooking.userId = user_object
                 tablebooking.tableId = table_object
@@ -681,110 +689,111 @@ def tablebooking(request):
                 tablebooking.checkoutTime = check_out_time
                 tablebooking.save()
 
-                messages.success(request, "Congratulations! Booking Successful")
+                messages.success(
+                    request, "Congratulations! Booking Successful")
                 return redirect("/Resturant")
 
         except ValidationError as e:
             messages.warning(request, str(e))
             return redirect("/Resturant")
-    
+
     else:
         template = loader.get_template('tablebooking.html')
         return HttpResponse(template.render())
-    
-            
+
+
 def book_farm_page(request):
     farm = Farm.objects.all().get(id=int(request.GET['farm_id']))
-    return HttpResponse(render(request,'farmbooking.html',{'farm':farm}))
-
+    return HttpResponse(render(request, 'farmbooking.html', {'farm': farm}))
 
 
 @login_required
 @csrf_exempt
 def farmbooking(request):
-        if request.method == "POST":
-            farm_id =request.POST.get('farm_id')
-            check_in =request.POST.get('check_in')
-            check_out = request.POST.get('check_out')
+    if request.method == "POST":
+        farm_id = request.POST.get('farm_id')
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
 
-            conflicting_bookings = FarmBooking.objects.filter(
+        conflicting_bookings = FarmBooking.objects.filter(
             Q(farmId__id=farm_id) &
             (Q(checkInDate__lte=check_in, checkoutDate__gte=check_in) |
-            Q(checkInDate__lte=check_out, checkoutDate__gte=check_out) |
-            Q(checkInDate__gte=check_in, checkoutDate__lte=check_out))
+             Q(checkInDate__lte=check_out, checkoutDate__gte=check_out) |
+                Q(checkInDate__gte=check_in, checkoutDate__lte=check_out))
         )
-            if conflicting_bookings.exists():
-                conflicting_booking = conflicting_bookings.first()
-                
-                messages.error(request, f"Sorry, this farm is unavailable for booking. It is already booked from {conflicting_booking.checkInDate} to {conflicting_booking.checkoutDate}.")
-                return redirect(f'/book-farm?farm_id={farm_id}')
-                                
-            else:
-                try:
-                    check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
-                    check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
-                    
-                    if check_in_date >= check_out_date:
-                        raise ValidationError("Check-in date must be before check-out date.")
-                    currenTouristaUser = request.user.username
-                    farmbooking = FarmBooking()
-                    farm_object = Farm.objects.get(id=farm_id)
-                    user_object = TouristaUser.objects.get(username=currenTouristaUser)
-                    farmbooking.userId = user_object
-                    farmbooking.farmId = farm_object
-                    farmbooking.price = 1000
-                    farmbooking.checkInDate = request.POST['check_in']
-                    farmbooking.checkoutDate = request.POST['check_out']
-                    farmbooking.save()
+        if conflicting_bookings.exists():
+            conflicting_booking = conflicting_bookings.first()
 
-                    messages.success(request, "Congratulations! Booking Successful")
-                    return redirect("/farm")
-            
-                except ValidationError as e:
-                    messages.warning(request, str(e))
-                        # return redirect("farm")
+            messages.error(
+                request, f"Sorry, this farm is unavailable for booking. It is already booked from {conflicting_booking.checkInDate} to {conflicting_booking.checkoutDate}.")
+            return redirect(f'/book-farm?farm_id={farm_id}')
 
         else:
-            template = loader.get_template('farmbooking.html')
-            return HttpResponse(template.render())
-           
-       
+            try:
+                check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
+                check_out_date = datetime.strptime(
+                    check_out, "%Y-%m-%d").date()
+
+                if check_in_date >= check_out_date:
+                    raise ValidationError(
+                        "Check-in date must be before check-out date.")
+                currenTouristaUser = request.user.username
+                farmbooking = FarmBooking()
+                farm_object = Farm.objects.get(id=farm_id)
+                user_object = TouristaUser.objects.get(
+                    username=currenTouristaUser)
+                farmbooking.userId = user_object
+                farmbooking.farmId = farm_object
+                farmbooking.price = 1000
+                farmbooking.checkInDate = request.POST['check_in']
+                farmbooking.checkoutDate = request.POST['check_out']
+                farmbooking.save()
+
+                messages.success(
+                    request, "Congratulations! Booking Successful")
+                return redirect("/farm")
+
+            except ValidationError as e:
+                messages.warning(request, str(e))
+                # return redirect("farm")
+
+    else:
+        template = loader.get_template('farmbooking.html')
+        return HttpResponse(template.render())
+
 
 @csrf_exempt
-def room(request,hotel_id):
+def room(request, hotel_id):
     hotel = Hotel.objects.get(id=hotel_id)
-    rooms= Room.objects.filter(hotelId=hotel_id)   
-    users=TouristaUser.objects.all()
-    #images=Image.objects.all()
+    rooms = Room.objects.filter(hotelId=hotel_id)
+    users = TouristaUser.objects.all()
+    # images=Image.objects.all()
 
     context = {}
     for room in rooms:
-        
+
         context[room.id] = {
-                "roomType": room.roomType,
-                                
-                                "room_id":room.id,
-                                "bedType": room.bedType,
-                                "price":room.price,
-                                "area":room.area,
-                                "roomNumber":room.roomNumber,
-                                "numberOfPeople":room.numberOfPeople,
-                                "hotel_id":hotel,
-                                
-                                
-                                # "path":images.path,
-                                
-                                }
-       
-    return render(request=request, template_name="room.html", context={"data":context})
+            "roomType": room.roomType,
+
+            "room_id": room.id,
+            "bedType": room.bedType,
+            "price": room.price,
+            "area": room.area,
+            "roomNumber": room.roomNumber,
+            "numberOfPeople": room.numberOfPeople,
+            "hotel_id": hotel,
 
 
+            # "path":images.path,
+
+        }
+
+    return render(request=request, template_name="room.html", context={"data": context})
 
 
 def book_room_page(request):
     room = Room.objects.all().get(id=int(request.GET['room_id']))
-    return HttpResponse(render(request,'roombooking.html',{'room':room}))
-
+    return HttpResponse(render(request, 'roombooking.html', {'room': room}))
 
 
 @login_required
@@ -800,28 +809,32 @@ def roombooking(request):
         conflicting_bookings = RoomBooking.objects.filter(
             Q(roomId__id=room_id) &
             (Q(checkInDate__lte=check_in, checkoutDate__gte=check_in) |
-            Q(checkInDate__lte=check_out, checkoutDate__gte=check_out) |
-            Q(checkInDate__gte=check_in, checkoutDate__lte=check_out))
+             Q(checkInDate__lte=check_out, checkoutDate__gte=check_out) |
+             Q(checkInDate__gte=check_in, checkoutDate__lte=check_out))
         )
 
         if conflicting_bookings.exists():
             conflicting_booking = conflicting_bookings.first()
-            messages.warning(request, f"Sorry, this room is unavailable for booking. It is already booked from {conflicting_booking.checkInDate} to {conflicting_booking.checkoutDate}.")
+            messages.warning(
+                request, f"Sorry, this room is unavailable for booking. It is already booked from {conflicting_booking.checkInDate} to {conflicting_booking.checkoutDate}.")
             return redirect(f'/book-room?room_id={room_id}')
-             
+
         else:
             try:
                 check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
-                check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
-                
+                check_out_date = datetime.strptime(
+                    check_out, "%Y-%m-%d").date()
+
                 if check_in_date >= check_out_date:
-                    raise ValidationError("Check-in date must be before check-out date.")
+                    raise ValidationError(
+                        "Check-in date must be before check-out date.")
                 currenTouristaUser = request.user.username
                 #  total_person = int(request.POST['numberOfPeople'])
                 bookingroom = RoomBooking()
                 room_object = Room.objects.get(id=room_id)
                 room_object.status = '2'
-                user_object = TouristaUser.objects.get(username=currenTouristaUser)
+                user_object = TouristaUser.objects.get(
+                    username=currenTouristaUser)
                 # user_object = TouristaUser.objects.get(price=currenTouristaUser)
                 bookingroom.userId = user_object
                 bookingroom.roomId = room_object
@@ -833,59 +846,54 @@ def roombooking(request):
                 # bookingroom.price = request.Get('price')
                 bookingroom.save()
 
-                messages.success(request, "Congratulations! Booking Successful")
+                messages.success(
+                    request, "Congratulations! Booking Successful")
 
                 return redirect('/hotel')
-        
+
             except ValidationError as e:
                 messages.warning(request, str(e))
-                    # return redirect("room")
+                # return redirect("room")
 
     else:
         template = loader.get_template('roombooking.html')
         return HttpResponse(template.render())
-    
-    
-    
-
 
 
 @csrf_exempt
-def addroom(request,hotel_id):
+def addroom(request, hotel_id):
     if request.method == "POST":
         total_rooms = len(Room.objects.all())
         new_room = Room()
-    
+
         hotel = Hotel.objects.get(id=hotel_id)
         roomNumber = total_rooms + 1
         roomType = request.POST['roomType']
         roomNumber = int(request.POST['roomNumber'])
-        price   = int(request.POST['price'])
-        area   = int(request.POST['area'])
-        numberOfPeople   = int(request.POST['numberOfPeople'])
+        price = int(request.POST['price'])
+        area = int(request.POST['area'])
+        numberOfPeople = int(request.POST['numberOfPeople'])
         # status     = request.POST['status']
-        bedType      = request.POST['bedType']
-        
+        bedType = request.POST['bedType']
+
         new_room = Room.objects.create(
             hotelId=hotel,
             roomNumber=roomNumber,
             roomType=roomType,
             price=price,
-            area =area,
+            area=area,
             numberOfPeople=numberOfPeople,
             # status=status,
             bedType=bedType
-            )
+        )
         new_room.save()
         messages.success(request, "add room successfully")
         # return redirect('addroom/'+str(hotel_id))
-        return HttpResponseRedirect(request.path_info)    
+        return HttpResponseRedirect(request.path_info)
 
     else:
         return render(request, 'addroom.html')
 
-        
-    
 
 @csrf_exempt
 def updateinfo(request):
@@ -907,7 +915,8 @@ def updateinfo(request):
                     user.set_password(new_password)
                     # user.save()
                 else:
-                    messages.error(request, "New password and confirm password do not match.")
+                    messages.error(
+                        request, "New password and confirm password do not match.")
                     return redirect('/updateinfo')
             else:
                 messages.error(request, "Old password is incorrect.")
@@ -922,21 +931,20 @@ def updateinfo(request):
     return render(request, 'updateinfo.html', {'user': request.user})
 
 
-    
-def delete_room(request,roomid):
-    room=Room.objects.get(id=roomid)
+def delete_room(request, roomid):
+    room = Room.objects.get(id=roomid)
     room.delete()
     return redirect('/')
 
-def delete_table(request,tableid):
-    table=Table.objects.get(id=tableid)
+
+def delete_table(request, tableid):
+    table = Table.objects.get(id=tableid)
     table.delete()
     return redirect('/')
 
 
-
 def deletepublicplace(request, publicplace_id):
-    publicplace=PublicPlace.objects.get(id=publicplace_id)
+    publicplace = PublicPlace.objects.get(id=publicplace_id)
     publicplace.delete()
     return redirect('/yourplace')
 
@@ -953,21 +961,17 @@ def allbookings(request, farm_id):
     return render(request, 'allbooking.html', context)
 
 
-
-
-
 def allroombookings(request, hotel_id):
     hotel = Hotel.objects.get(id=hotel_id)
     room = Room.objects.filter(hotelId=hotel_id)
     bookings = RoomBooking.objects.filter(roomId__in=room)
     context = {
-        'hotel':hotel,
+        'hotel': hotel,
         'room': room,
         'bookings': bookings,
     }
 
     return render(request, 'allbooking.html', context)
-
 
 
 def alltablebookings(request, rest_id):
@@ -976,16 +980,18 @@ def alltablebookings(request, rest_id):
     bookings = TableBooking.objects.filter(tableId__in=table)
 
     context = {
-        'rest':rest,
+        'rest': rest,
         'table': table,
         'boookings': bookings,
     }
 
     return render(request, 'allbooking.html', context)
 
+
 def proposedplaces(request):
-    all_governate =Governate.objects.values_list('governateName','id').distinct().order_by()
-    all_city=City.objects.values_list('cityName','id').distinct().order_by()
+    all_governate = Governate.objects.values_list(
+        'governateName', 'id').distinct().order_by()
+    all_city = City.objects.values_list('cityName', 'id').distinct().order_by()
     if request.method == 'POST':
         governate_name = request.POST.get('governateName')
         city_name = request.POST.get('cityName')
@@ -996,25 +1002,26 @@ def proposedplaces(request):
         governate = Governate.objects.get(id=governate_name)
         city = City.objects.get(id=city_name, governateId=governate)
         # استخدم قيمة المدينة المحددة في إنشاء كائن TouristDestination
-        proposed_place = TouristDestination(cityId=city, name=name, latitude=latitude, longitude=longitude, description=description)
+        proposed_place = TouristDestination(
+            cityId=city, name=name, latitude=latitude, longitude=longitude, description=description)
         proposed_place.save()
-        
+
         publicPlaceId = proposed_place
         messages.success(request, 'تمت الإضافة بنجاح')
         files = request.FILES.getlist('path')
         for i in files:
-            image = TouristDestinationImage.objects.create(publicPlaceId=publicPlaceId, path=i)
+            image = TouristDestinationImage.objects.create(
+                publicPlaceId=publicPlaceId, path=i)
             image.save()
-        
+
         # قم بتنفيذ الإجراءات اللازمة مثل إرسال رسالة تأكيد أو تحويل المستخدم إلى صفحة أخرى
         return redirect('/')  # استبدل '/' بعنوان URL الصحيح
- 
-    
-    return render(request, 'proposedPlaces.html', {'all_governate':all_governate,'all_city':all_city})
 
-    
+    return render(request, 'proposedPlaces.html', {'all_governate': all_governate, 'all_city': all_city})
+
+
 def DeleteAccount(request):
     user = request.user
     user.delete()
-    messages.success(request,'Your Account Has Deleted')
+    messages.success(request, 'Your Account Has Deleted')
     return redirect('/')
